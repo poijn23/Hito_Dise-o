@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-13}{Se recorta la IA en la semana 10}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-05 Mantenibilidad: modularidad.}
+\parte{Stakeholders}{STK-04 Director del proyecto, STK-03 Profesor o cliente, STK-07 Programadores.}
+\parte{Concerns}{CRN-07: \emph{``Necesito saber si todo lo que se ha comprometido cabe de verdad en las 14 semanas del curso, y qué se recorta primero si no cabe.''} CRN-14 (avanzar sin que una decisión tardía obligue a rehacer).}
+\parte{Restricciones y dependencias}{CON-13 (14 semanas), CON-14 (incrementos auditables cada semana).}
+\parte{Tensiones y preguntas}{TEN-04 Alcance contra profundidad arquitectónica. Q-01 (oponente controlado por IA).}
+\parte{Tipo y prioridad}{De crecimiento, en tiempo de desarrollo. Prioridad (A, M).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Director del proyecto.}
+\parte{Estímulo}{En la semana 10 ve que el oponente controlado por IA no va a estar listo a tiempo y decide sacarlo del alcance.}
+\parte{Ambiente}{Semana 10 de 14, con el núcleo jugable y el modo en línea funcionando, y la IA a medio construir.}
+\parte{Artefacto}{Módulo del oponente y las partes del juego que dependen de él, como el menú y la selección de partida.}
+\parte{Respuesta}{La IA sale del alcance sin retrasar la entrega. Todo lo obligatorio, el núcleo jugable y el modo en línea, sigue funcionando igual que la semana anterior, y ninguna opción de la interfaz lleva a una función que ya no existe.}
+\parte{Medida de la respuesta}{El recorte cuesta menos de 1 día de trabajo del equipo. Se modifican 0 archivos del motor de reglas, del servidor de partidas y de la capa de red. El 100~\% de las pruebas automáticas del núcleo y del modo en línea pasan. El incremento de la semana 10 se entrega en su fecha, y al recorrer todas las pantallas no aparece ninguna opción rota.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} Con un plazo fijo de 14 semanas y entregas auditadas cada semana, lo más probable no es agregar funcionalidades, sino quitarlas. La IA es la primera candidata: su existencia no está decidida (Q-01) y es la funcionalidad adicional más costosa. CRN-07 pregunta qué se recorta primero, y este escenario mide si ese recorte es posible sin dañar lo obligatorio. También fija cuánto debe rendir la abstracción que propone TEN-04: si quitar la IA obligara a tocar el motor o el servidor, el costo de haberla diseñado no se habría pagado.
+
+\textbf{Cómo se verifica.} Se ensaya el recorte en una rama del repositorio, registrando las horas dedicadas y los archivos modificados. Después se ejecutan las pruebas automáticas del núcleo y del modo en línea y se hace un recorrido completo por la interfaz buscando opciones que lleven a pantallas vacías o con error.

@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-15}{Hay que cambiar nombre, arte y recursos por motivos legales}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-05 Mantenibilidad: modificabilidad.}
+\parte{Stakeholders}{STK-17 Asesor legal y de propiedad intelectual, STK-18 Gigamic y Mirko Marchesi, STK-08 Equipo de arte, interfaz y sonido, STK-04 Director del proyecto.}
+\parte{Concerns}{CRN-24: \emph{``Necesito saber hasta dónde puede parecerse el juego a Quoridor sin infringir derechos de terceros. Si me equivoco, habrá que cambiar nombre, arte o redacción de reglas con el proyecto ya avanzado.''} CRN-14 (el nombre del juego todavía no está decidido).}
+\parte{Restricciones y dependencias}{CON-15 (no infringir la propiedad intelectual de Quoridor), CON-18 (recursos de terceros con licencia compatible).}
+\parte{Tensiones y preguntas}{Q-07 (nombre definitivo e identidad visual), Q-08 (distancia a las reglas de Quoridor).}
+\parte{Tipo y prioridad}{De crecimiento, en tiempo de desarrollo. Prioridad (A, M).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Asesor legal y de propiedad intelectual.}
+\parte{Estímulo}{A tres semanas de la entrega determina dos cosas: que el nombre provisional ``Bastion'', el logotipo y el arte del tablero se parecen demasiado a Quoridor, y que una fuente tipográfica y dos efectos de sonido tienen una licencia que no permite distribuir el juego. Pide cambiar todo eso.}
+\parte{Ambiente}{Juego funcionando en español e inglés, con partidas ya registradas en la base de datos.}
+\parte{Artefacto}{Nombre, logotipo, arte del tablero, redacción de las reglas, fuentes y sonidos del cliente.}
+\parte{Respuesta}{El nombre, el arte, la redacción de las reglas y los recursos con licencia incompatible se sustituyen por completo en todas las pantallas, idiomas y archivos del juego, sin tocar la lógica y sin posponer la entrega.}
+\parte{Medida de la respuesta}{El cambio está listo en menos de 2 días de trabajo. Se modifican 0 archivos del motor de reglas, del servidor de partidas y de la capa de red. Una búsqueda automática del nombre anterior en el paquete del juego, los catálogos de idiomas y los textos guardados en la base de datos encuentra 0 coincidencias. El paquete no contiene ningún archivo de los recursos retirados, y el 100~\% de los recursos de terceros restantes tiene una licencia registrada y compatible.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} CON-15 es la única restricción cuyo cumplimiento no se verifica con código: depende de la opinión del asesor legal, y esa opinión puede llegar en cualquier momento. STK-18 nunca usará el juego, pero tiene poder legal para exigir cambios o detener el proyecto. El nombre todavía no está decidido (Q-07), así que el cambio es casi seguro, no hipotético. Se juntan en un solo escenario el nombre y las licencias (CON-18) porque ponen a prueba la misma propiedad: que todo lo que es marca o recurso de terceros esté separado de la lógica del juego y se pueda reemplazar tarde, sin dejar restos.
+
+\textbf{Cómo se verifica.} Se hace el cambio en una rama, registrando horas y archivos modificados. Después se genera el paquete del juego y se busca el nombre anterior en todos sus archivos, en los catálogos de idiomas y en la base de datos. Se compara la lista de archivos del paquete con la de recursos retirados y se revisa el registro de licencias.

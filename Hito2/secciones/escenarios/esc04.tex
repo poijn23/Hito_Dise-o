@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-04}{Llega un mensaje inapropiado al chat de una partida}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-09 Protección del usuario menor: operación a prueba de fallos e identificación de riesgos.}
+\parte{Stakeholders}{STK-02 Padre o tutor, STK-17 Asesor legal, STK-19 Plataformas de distribución, STK-01 Jugador.}
+\parte{Concerns}{CRN-04: \emph{``No voy a dejar que mi hijo juegue si en el chat puede encontrarse insultos o que un desconocido intente hablarle.''} CRN-25 (política de chat conforme a cada región).}
+\parte{Restricciones y dependencias}{CON-09 (filtro de palabras obligatorio), CON-11 (varios idiomas).}
+\parte{Tensiones y preguntas}{TEN-02 Sanción automática contra justicia de la sanción. Q-05 (distinguir a un menor), Q-10 (publicación).}
+\parte{Tipo y prioridad}{De uso, en tiempo de ejecución, con una variante degradada. Prioridad (A, M).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Rival adulto en una partida en línea contra un niño de 8 años.}
+\parte{Estímulo}{Escribe en el chat un insulto, primero tal cual y después disfrazado con cambios de letras, espacios o símbolos (por ejemplo, ``1d10ta''), en español o en inglés. En la variante degradada, el componente de filtrado deja de responder en ese momento.}
+\parte{Ambiente}{Partida en línea en curso con el chat activado. Uno de los dos jugadores es menor de edad.}
+\parte{Artefacto}{Chat de partida y filtro de palabras del servidor.}
+\parte{Respuesta}{El mensaje no llega al niño con el insulto legible. El emisor sabe que su mensaje fue bloqueado. Si el filtro no responde, el chat se suspende para esa partida en lugar de dejar pasar mensajes sin filtrar, y la partida continúa.}
+\parte{Medida de la respuesta}{Con 300 mensajes de prueba, formados por 50 insultos (25 en español y 25 en inglés) escritos tal cual y en 5 variantes disfrazadas cada uno: el 100~\% de los escritos tal cual se bloquea y al menos el 95~\% de las variantes disfrazadas también. Menos del 2~\% de 500 frases normales de partida se bloquea por error. Los mensajes enviados desde un cliente alterado que se salta la interfaz se bloquean igual. Con el filtro caído, 0 mensajes llegan sin filtrar y el aviso de chat suspendido aparece en menos de 2 segundos.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} El padre o tutor tiene poder de veto: si su hijo lee un insulto, el juego deja de usarse, y lo mismo pasa con la plataforma de distribución si la política de chat no cumple (CRN-25). El escenario obliga a decidir dónde vive el filtro: si se aplicara en el cliente, un cliente alterado lo evitaría, y por eso la medida incluye ese caso. La variante degradada es la más importante para esta característica: lo que protege al menor es que, cuando el filtro falla, el chat también se detiene, en lugar de quedar abierto sin control.
+
+\textbf{Cómo se verifica.} Un cliente automatizado envía la lista de insultos y la de frases normales, tanto por la interfaz como directamente por el protocolo. El otro cliente registra lo que recibe. Para la variante degradada se detiene el componente de filtrado durante la prueba y se comprueba que no pasa ningún mensaje.

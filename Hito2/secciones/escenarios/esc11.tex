@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-11}{Se agrega un tercer idioma con otro sistema de escritura}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-04 Flexibilidad: adaptabilidad a otros idiomas y regiones (localizabilidad).}
+\parte{Stakeholders}{STK-11 Equipo de localización, STK-08 Equipo de arte, interfaz y sonido, STK-09 Diseñador de experiencia de usuario.}
+\parte{Concerns}{CRN-16: \emph{``Necesito poder traducirlo todo sin tocar el código: textos, fechas, números y formatos. Lo que esté escrito dentro del programa o incrustado en una imagen, yo no lo puedo cambiar.''} CRN-15 (botones que en otro idioma ocupan la mitad o el doble).}
+\parte{Restricciones y dependencias}{CON-05 (textos en Unicode), CON-11 (cambio de idioma), CON-04 (SQL Server).}
+\parte{Tensiones y preguntas}{TEN-05 Interfaz para niños contra interfaz multilingüe.}
+\parte{Tipo y prioridad}{De crecimiento, en tiempo de desarrollo. Prioridad (A, M).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Equipo de localización.}
+\parte{Estímulo}{Recibe el encargo de agregar el japonés, que usa otro sistema de escritura y tiene sus propios formatos de fecha y número.}
+\parte{Ambiente}{El juego ya funciona en español e inglés, con jugadores de ambos idiomas registrados, y el idioma nuevo tiene que estar listo dentro de un incremento semanal.}
+\parte{Artefacto}{Textos, fechas, números y formatos visibles del juego, la capa de red y el almacenamiento de textos en SQL Server.}
+\parte{Respuesta}{El equipo de localización traduce y configura el idioma por su cuenta, sin pedir cambios a los programadores. Todo texto visible se puede traducir, incluido el de botones e imágenes. Un nombre de jugador escrito en japonés se guarda y se muestra bien al rival que juega en español.}
+\parte{Medida de la respuesta}{El idioma queda listo en menos de una semana con 0 líneas de código modificadas. El 100~\% de los textos visibles se puede traducir y 0 están incrustados en imágenes. Con textos de prueba un 40~\% más largos que el español, 0 pantallas muestran texto cortado o encimado. Un nombre de jugador en japonés hace el viaje completo (cliente, red, SQL Server y pantalla del rival) sin ningún carácter dañado, y fechas y números se muestran con el formato de cada región en el 100~\% de las pantallas.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} La distribución internacional es un objetivo declarado del proyecto, y el cambio de idioma es obligatorio (CON-11). La localizabilidad es barata si se diseña desde el inicio y muy cara si se descubre al final: basta un texto escrito en el código, una columna que no admite Unicode en SQL Server o un socket que transmite en otra codificación para que el idioma nuevo obligue a tocar código. Elegir japonés en lugar de otro idioma europeo pone a prueba lo que el español y el inglés no prueban: caracteres fuera del alfabeto latino de extremo a extremo. Los textos un 40~\% más largos prueban lo contrario, que la interfaz aguante idiomas más extensos (CRN-15). Y la exigencia de que nada esté incrustado en imágenes choca con lo que pide la interfaz para niños (TEN-05).
+
+\textbf{Cómo se verifica.} Una persona de localización, sin acceso al código, agrega el idioma y se registra el tiempo. Se revisa el repositorio para confirmar que no hubo cambios de código. Se hace un recorrido por todas las pantallas con pseudolocalización (textos alargados con caracteres especiales) y se registra cada texto cortado. Se crea un jugador con nombre en japonés, se juega contra un cliente en español y se compara lo mostrado con lo escrito.

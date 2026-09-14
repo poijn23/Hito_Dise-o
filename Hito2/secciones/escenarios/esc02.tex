@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-02}{Un niño intenta una barrera que encierra a su rival}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-02 Usabilidad: protección contra errores de usuario.}
+\parte{Stakeholders}{STK-01 Jugador (8 años o más), STK-09 Diseñador de experiencia de usuario.}
+\parte{Concerns}{CRN-01: \emph{``Cuando intento una jugada que el juego no me deja hacer, quiero entender al momento por qué no puedo. Si tengo que ponerme a leer un párrafo para saberlo, me aburro y lo dejo.''}}
+\parte{Restricciones y dependencias}{CON-12 (comprensible para niños de 8 años o más), CON-11 (cambio de idioma).}
+\parte{Tensiones y preguntas}{TEN-05 Interfaz para niños contra interfaz multilingüe.}
+\parte{Tipo y prioridad}{De uso, en tiempo de ejecución. Prioridad (A, M).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Jugador de 8 años que está aprendiendo a jugar.}
+\parte{Estímulo}{Intenta colocar una barrera que dejaría a su rival sin ningún camino hacia la meta.}
+\parte{Ambiente}{Una de sus tres primeras partidas, jugando en su idioma (español o inglés), sin un adulto al lado.}
+\parte{Artefacto}{Interfaz del tablero y motor de reglas.}
+\parte{Respuesta}{El juego no deja colocar la barrera, le muestra de forma visual qué camino quedaría cerrado y conserva su turno para que intente otra jugada.}
+\parte{Medida de la respuesta}{En una prueba con 10 niños de 8 y 9 años: al menos 9 explican con sus palabras o señalan en la pantalla por qué no pudieron colocar la barrera en menos de 5 segundos, sin ayuda de un adulto; el texto mostrado tiene como máximo una frase de 8 palabras; ningún niño pierde el turno por el error; y al menos 9 de 10 siguen jugando la partida.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} La regla de no encerrar por completo al rival es la que distingue a este tipo de juego y, a la vez, la menos intuitiva: el niño ve un hueco libre en el tablero y no entiende por qué no puede usarlo. Es la jugada inválida que más va a ocurrir y, si no se entiende, el niño abandona, que es exactamente lo que dice CRN-01. Además, el escenario tiene una consecuencia estructural: el motor de reglas no puede limitarse a responder sí o no, porque la interfaz necesita saber qué camino queda cerrado para mostrarlo. Y como la explicación tiene que funcionar en varios idiomas, lo visual pesa más que el texto (TEN-05).
+
+\textbf{Cómo se verifica.} Sesiones de prueba con niños, con el consentimiento de sus tutores. Se prepara una partida en la que la barrera inválida es una jugada natural. Un observador mide con cronómetro desde que aparece la señal hasta que el niño da una explicación correcta, y registra si pidió ayuda y si terminó la partida.
