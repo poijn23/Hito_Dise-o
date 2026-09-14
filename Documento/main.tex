@@ -1,5 +1,6 @@
 % ============================================================
-%  Hito 1 - Análisis de contexto y drivers
+%  Análisis de contexto, escenarios de calidad y drivers
+%  (unión del Hito 1 y el Hito 2)
 %  Compilar con XeLaTeX o LuaLaTeX (usa fontspec):
 %      latexmk main.tex        (usa .latexmkrc -> xelatex)
 %      xelatex main.tex
@@ -10,6 +11,15 @@
 
 \begin{document}
 
+\input{secciones/00_portada}
+
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% --- Contexto y drivers del sistema ---
 \input{secciones/01_contexto}
 \input{secciones/02_stakeholders}
 \input{secciones/03_concerns}
@@ -17,8 +27,13 @@
 \input{secciones/05_restricciones}
 \input{secciones/06_tensiones}
 \input{secciones/07_preguntas}
-\input{secciones/08_calidad}
-\input{secciones/09_matriz_stk_crn}
-\input{secciones/10_trazabilidad}
+
+% --- Calidad ---
+\input{secciones/08_caracteristicas_calidad}
+\input{secciones/09_escenarios}
+
+% --- Matrices ---
+\input{secciones/10_matriz_stk_crn}
+\input{secciones/11_trazabilidad}
 
 \end{document}
