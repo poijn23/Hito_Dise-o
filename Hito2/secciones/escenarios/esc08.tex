@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-08}{Se corta la conexión del jugador a mitad de su turno}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-06 Fiabilidad: recuperabilidad y tolerancia a fallos.}
+\parte{Stakeholders}{STK-01 Jugador (8 años o más), STK-14 Equipo de operaciones y despliegue.}
+\parte{Concerns}{CRN-06: \emph{``Si se me corta la conexión a mitad de partida quiero saber qué pasa: si puedo volver, si pierdo automáticamente, o si dejo al otro esperando.''}}
+\parte{Restricciones y dependencias}{CON-02 (TCP), CON-06 (multijugador en línea), CON-17 (el comportamiento de la pila TCP/IP varía entre entornos), DEP-04 (infraestructura).}
+\parte{Tensiones y preguntas}{No aplica.}
+\parte{Tipo y prioridad}{Exploratorio, en tiempo de ejecución (operación degradada). Prioridad (A, A).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Red doméstica del jugador.}
+\parte{Estímulo}{La conexión se pierde a mitad del turno del jugador sin que se cierre de forma ordenada, por ejemplo, porque se cae el Wi-Fi de su casa. Ni el cliente ni el servidor reciben aviso de cierre.}
+\parte{Ambiente}{Partida en línea en curso, con el oponente y el servidor todavía conectados.}
+\parte{Artefacto}{Servidor de partidas, gestión de turnos y estado de partida, y capa de red sobre TCP.}
+\parte{Respuesta}{El sistema detecta que el jugador se fue. El oponente sabe cuánto tiempo va a esperar. Si el jugador vuelve a tiempo, retoma la partida exactamente donde estaba. Si no vuelve, la partida termina con un resultado definido y registrado.}
+\parte{Medida de la respuesta}{El servidor detecta la desconexión en menos de 15 segundos y el oponente ve el aviso con la cuenta regresiva en ese mismo plazo. Si el jugador vuelve antes de 2 minutos, ve su partida en menos de 5 segundos tras abrir el juego, con el mismo tablero, el mismo turno y 0 jugadas perdidas. Si no vuelve, la partida se cierra a los 2 minutos con el resultado registrado. En 50 cortes simulados en distintos momentos de la partida, 0 partidas quedan en un estado indefinido.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} Es la falla más común que va a sufrir el juego: los niños juegan desde redes domésticas y la conexión se cae. Con TCP hay un detalle que vuelve el escenario difícil y no genérico: cuando el Wi-Fi se cae, la conexión no se cierra, sino que queda medio abierta. Ninguno de los dos extremos recibe aviso, y el mecanismo de mantenimiento de TCP que trae el sistema operativo tarda del orden de horas en darse cuenta, y además varía entre entornos (CON-17). Si nadie decide cómo detectarlo, el oponente queda esperando sin saber hasta cuándo, que es justo lo que teme CRN-06. La recuperación exige además que el estado de la partida viva en un lugar del que se pueda retomar.
+
+\textbf{Cómo se verifica.} Con un emulador de red o una regla de cortafuegos se descartan todos los paquetes del cliente sin cerrar la conexión, que es lo que ocurre cuando se cae el Wi-Fi. Se mide cuándo lo detecta el servidor y cuándo ve el aviso el oponente. Después se reconecta antes y después de los 2 minutos y se compara el tablero con el que había antes del corte. Se repite 50 veces en distintos momentos de la partida.

@@ -1,0 +1,90 @@
+% ============================================================
+%  Preámbulo: mismo estilo que el H1, más utilidades para escenarios
+% ============================================================
+
+% --- Página (carta, márgenes de 1 in como el original de Word) ---
+\usepackage[letterpaper,margin=2.54cm]{geometry}
+
+% --- Idioma y fuentes ---
+\usepackage{fontspec}
+\usepackage[spanish,es-noshorthands]{babel}
+% Calibri si está instalada (Windows); si no, Carlito (métricamente idéntica).
+% Sin ligaduras comunes (fi, ti, ...), igual que Word.
+\IfFontExistsTF{Calibri}
+  {\setmainfont{Calibri}[Ligatures={TeX,NoCommon}]}
+  {\setmainfont{Carlito}[Ligatures={TeX,NoCommon}]}
+\linespread{1.05}
+
+% --- Paquetes ---
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{xltabular}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={H2 Características y escenarios de calidad}}
+
+% --- Colores (tema de Office) ---
+\definecolor{titulo}{HTML}{1F3864}
+\definecolor{subtitulo}{HTML}{2F5496}
+\definecolor{encabezado}{HTML}{D9E2F3}
+\definecolor{bloque}{HTML}{EEF2FA}
+
+% --- Párrafos: alineados a la izquierda y sin división silábica (como Word) ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\hyphenpenalty=10000
+\AtBeginDocument{\raggedright}
+\pagestyle{empty}
+
+% --- Títulos: "7. Título", "7.1 Título" y títulos de escenario ---
+\titleformat{\section}
+  {\color{titulo}\bfseries\fontsize{16}{19}\selectfont}{\thesection.}{0.3em}{}
+\titleformat{\subsection}
+  {\color{subtitulo}\bfseries\fontsize{13}{16}\selectfont}{\thesubsection}{0.3em}{}
+\titleformat{\subsubsection}
+  {\color{subtitulo}\bfseries\fontsize{11.5}{14}\selectfont}{\thesubsubsection}{0.3em}{}
+\titlespacing*{\section}{0pt}{16pt}{6pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{12pt}{4pt}
+
+% --- Listas con viñeta redonda ---
+\setlist[itemize]{label={\small\textbullet}, leftmargin=1.2cm, itemsep=2pt, topsep=2pt}
+
+% --- Tablas ---
+\setlength{\tabcolsep}{4pt}
+\setlength{\arrayrulewidth}{0.5pt}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}   % ancho fijo, texto a la izquierda
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}          % ancho flexible, texto a la izquierda
+\newcolumntype{C}{>{\centering\arraybackslash}X}            % ancho flexible, centrado (matrices)
+
+% Celda de encabezado (negrita y centrada)
+\newcommand{\cab}[1]{\centering\arraybackslash\bfseries #1}
+% Fila de encabezado sombreada (el sombreado se recorta un poco a cada lado
+% para que no tape las líneas verticales)
+\newcommand{\filacab}{%
+  \rowcolor{encabezado}[\dimexpr\tabcolsep-\arrayrulewidth\relax][\dimexpr\tabcolsep-\arrayrulewidth\relax]}
+
+% Tabla con cortes de página y encabezado repetido
+%   \begin{tabla}{|L{3cm}|Y|} ... \end{tabla}
+\newenvironment{tabla}[1]
+  {\par\footnotesize\renewcommand{\arraystretch}{1.3}%
+   \setlength{\LTpre}{2pt}\setlength{\LTpost}{6pt}%
+   \xltabular{\textwidth}{#1}}
+  {\endxltabular\par}
+
+% --- Escenarios ---
+% Título de un escenario:           \escenario{ESC-01}{Título}
+% (si no queda al menos media página, el escenario empieza en la siguiente)
+\usepackage{needspace}
+\newcommand{\escenario}[2]{\Needspace*{0.55\textheight}\subsubsection*{#1 --- #2}}
+% Fila de una ficha de escenario:  \parte{Elemento}{Descripción}
+\newcommand{\parte}[2]{\textbf{#1} & #2 \\ \hline}
+% Separador de bloque dentro de la ficha:  \bloque{Trazabilidad}
+\newcommand{\bloque}[1]{%
+  \multicolumn{2}{|>{\columncolor{bloque}}l|}{\bfseries #1} \\ \hline}
+% Encabezado de la ficha (se repite si la tabla cambia de página)
+\newcommand{\fichacab}{%
+  \hline
+  \filacab \cab{Elemento} & \cab{Descripción} \\ \hline
+  \endhead}

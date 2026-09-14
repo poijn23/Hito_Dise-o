@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-10}{El servicio de correo deja de responder durante registros}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-06 Fiabilidad: tolerancia a fallos.}
+\parte{Stakeholders}{STK-13 Administrador de base de datos, STK-14 Equipo de operaciones y despliegue, STK-01 Jugador.}
+\parte{Concerns}{CRN-21: \emph{``Si el correo o el servidor externo dejan de responder, necesito saber qué hace el sistema: reintentar, dejar la cuenta pendiente o degradarse de forma controlada. Lo que no puede es quedarse colgado.''}}
+\parte{Restricciones y dependencias}{DEP-01 (servicio de correo electrónico), DEP-02 (proveedor del segundo factor).}
+\parte{Tensiones y preguntas}{Q-03 (mecanismo del segundo factor), Q-04 (validación del registro por correo). Aplica si alguna de las dos respuestas incluye el correo.}
+\parte{Tipo y prioridad}{Exploratorio, en tiempo de ejecución (operación degradada). Prioridad (M, M).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Servicio de correo electrónico externo.}
+\parte{Estímulo}{Deja de responder durante 30 minutos: las solicitudes de envío no reciben respuesta.}
+\parte{Ambiente}{Operación normal, con 10 jugadores registrándose y pidiendo el correo de verificación durante esos 30 minutos, y partidas en línea en curso.}
+\parte{Artefacto}{Módulo de cuentas (registro y verificación) y su integración con el servicio de correo.}
+\parte{Respuesta}{El registro no se bloquea: la cuenta queda pendiente de verificación y el jugador recibe un aviso comprensible. El sistema reenvía los correos cuando el servicio vuelve. El resto del juego sigue funcionando.}
+\parte{Medida de la respuesta}{Ninguna pantalla de registro espera más de 10 segundos una respuesta. El 100~\% de las cuentas creadas durante la falla queda en estado pendiente y ninguna queda a medias. Cuando el servicio vuelve, el 100~\% de los correos pendientes se envía en menos de 15 minutos y sin duplicados. Las partidas en curso y el inicio de sesión de cuentas ya verificadas siguen cumpliendo ESC-01.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} Si Q-04 se resuelve a favor de validar el registro por correo, o si Q-03 elige el correo como segundo factor, un tercero que el equipo no controla entra en el camino de un flujo que el usuario está esperando. Es el único punto del sistema donde eso pasa, y la pantalla congelada es la falla que CRN-21 declara inaceptable. El escenario obliga a tratar el registro como un proceso en varios pasos que se puede quedar pendiente, y no como un paso único que se completa o falla. Además, delimita el daño: la caída del correo no puede afectar a las partidas.
+
+\textbf{Cómo se verifica.} Se sustituye el servicio de correo por uno simulado que deja de responder durante 30 minutos. Clientes automáticos registran las 10 cuentas y se mide el tiempo de cada pantalla. Después se restablece el servicio simulado y se cuentan los correos recibidos y los duplicados. En paralelo se repite ESC-01.
