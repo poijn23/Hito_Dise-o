@@ -1,0 +1,151 @@
+% ============================================================
+\section{Concerns (CRN)}
+% ============================================================
+
+\subsection{Usuarios y clientes}
+
+\begin{tabla}{|L{1.1cm}|L{5.15cm}|L{2.15cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Concern} & \cab{STK} & \cab{Consecuencia arquitectónica} \\ \hline
+\endhead
+CRN-01 &
+Cuando intento una jugada que el juego no me deja hacer, quiero entender al momento por qué no puedo. Si tengo que ponerme a leer un párrafo para saberlo, me aburro y lo dejo. &
+STK-01, STK-09 &
+Exige retroalimentación inmediata (previsualización de barreras, resaltado de casillas legales) y obliga a validar reglas también en el cliente. \\ \hline
+CRN-02 &
+Cuando coloco una barrera quiero que el juego me conteste al instante. Si tarda más de un segundo en decirme si vale, la partida se me hace pesada. &
+STK-01 &
+El presupuesto se reparte entre la búsqueda de camino, el viaje de red y la escritura en base de datos. Condiciona qué se persiste durante la partida y qué al final. \\ \hline
+CRN-03 &
+Quiero que el juego me siga interesando cuando ya sé jugar, pero no quiero que aprender a jugar me cueste más de unos minutos. &
+STK-01, STK-06 &
+Favorece reglas parametrizables (tamaño de tablero, número de barreras) en lugar de variantes codificadas. \\ \hline
+CRN-04 &
+No voy a dejar que mi hijo juegue si en el chat puede encontrarse insultos o que un desconocido intente hablarle. &
+STK-02, STK-17, STK-19 &
+El filtrado debe ejecutarse en el servidor, ya que un cliente modificado podría evadirlo. \\ \hline
+CRN-05 &
+No quiero dar de mi hijo más datos de los imprescindibles. Si para entrar hay que registrarse y verificar identidad, quiero saber exactamente qué se guarda y para qué. &
+STK-02, STK-17 &
+Puede requerir consentimiento del tutor o cuentas con datos mínimos, lo que afecta el esquema de cuentas. \\ \hline
+CRN-06 &
+Si se me corta la conexión a mitad de partida quiero saber qué pasa: si puedo volver, si pierdo automáticamente, o si dejo al otro esperando. &
+STK-01, STK-14 &
+Exige estado autoritativo persistido, tiempos límite de turno y una política de reconexión o rendición. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Negocio y dirección}
+
+\begin{tabla}{|L{1.1cm}|L{5.15cm}|L{2.15cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Concern} & \cab{STK} & \cab{Consecuencia arquitectónica} \\ \hline
+\endhead
+CRN-07 &
+Necesito saber si todo lo que se ha comprometido cabe de verdad en las 14 semanas del curso, y qué se recorta primero si no cabe. &
+STK-03, STK-04 &
+Obliga a aislar las funcionalidades adicionales tras interfaces, para poder recortarlas sin comprometer el núcleo ni el modo en línea. \\ \hline
+CRN-08 &
+Cada semana quiero ver algo que funcione y que yo pueda probar, no una explicación de lo que se está construyendo por dentro. &
+STK-03, STK-16 &
+Favorece construir por rebanadas verticales completas en lugar de capa por capa. \\ \hline
+CRN-09 &
+Necesito poder justificar cada decisión estructural que tomo. Si dentro de dos meses alguien me pregunta por qué manda el servidor y no el cliente, tengo que poder señalar dónde lo decidí y con qué motivo. &
+STK-05, STK-16 &
+Requiere mantener la trazabilidad como parte del entregable y no como un anexo posterior. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Desarrollo y arquitectura}
+
+\begin{tabla}{|L{1.1cm}|L{5.15cm}|L{2.15cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Concern} & \cab{STK} & \cab{Consecuencia arquitectónica} \\ \hline
+\endhead
+CRN-10 &
+Tengo que decidir quién manda sobre el estado de la partida, el cliente o el servidor. De esa decisión cuelga casi todo lo demás, y cambiarla más adelante me sale carísimo. &
+STK-05, STK-15 &
+Decisión estructural mayor. El servidor autoritativo protege contra trampas pero añade latencia. \\ \hline
+CRN-11 &
+Sin WebSockets tengo que definir yo el protocolo sobre TCP: dónde empieza y termina cada mensaje, cómo lo serializo, y qué hago cuando el cliente y el servidor no tienen la misma versión. &
+STK-05, STK-07 &
+Sin WebSockets no existe delimitación automática de mensajes; hay que resolver la fragmentación y la compatibilidad entre versiones del cliente. \\ \hline
+CRN-12 &
+Si el cliente y el servidor aplican reglas distintas, el jugador verá válida una jugada que el servidor le rechaza. Necesito que los dos usen exactamente la misma lógica. &
+STK-05, STK-10 &
+Empuja hacia un único motor de reglas compartido como biblioteca, consumido por ambos lados. \\ \hline
+CRN-13 &
+Mientras equilibro el juego voy a cambiar el tamaño del tablero y el número de barreras decenas de veces. No puedo depender de que alguien recompile cada vez que quiero probar un valor. &
+STK-06 &
+Los parámetros de reglas deben vivir en configuración externa y no como constantes en el código. \\ \hline
+CRN-14 &
+Todavía no he decidido si habrá IA ni conexión LAN, ni cómo se va a llamar el juego. Necesito que el equipo pueda avanzar sin que mi decisión, cuando llegue, les obligue a rehacer lo ya hecho. &
+STK-04, STK-07 &
+Requiere abstraer el concepto de oponente y el extremo de red, y aislar marca y arte del código. \\ \hline
+CRN-15 &
+Diseño las pantallas en español, pero el mismo botón en inglés puede ocupar la mitad o el doble. Si maqueto con anchos fijos, se me descuadra la interfaz en cuanto se traduce. &
+STK-08, STK-11 &
+Prohíbe anchos fijos y texto incrustado en imágenes. Debe decidirse antes de maquetar. \\ \hline
+CRN-16 &
+Necesito poder traducirlo todo sin tocar el código: textos, fechas, números y formatos. Lo que esté escrito dentro del programa o incrustado en una imagen, yo no lo puedo cambiar. &
+STK-11 &
+Cadenas externalizadas en catálogos de recursos y Unicode de extremo a extremo, incluido el esquema en SQL Server. \\ \hline
+CRN-17 &
+Necesito ejecutar y repetir partidas enteras sin pasar por la interfaz. Si para reproducir un fallo tengo que ir haciendo clic en el tablero, no me da tiempo a probar lo suficiente. &
+STK-10 &
+Exige separar el motor de reglas de la interfaz y que la partida sea determinista y registrable jugada por jugada. \\ \hline
+CRN-26 &
+El mecanismo del segundo factor todavía no está decidido. Necesito dejarlo detrás de una interfaz para poder cambiarlo después sin tener que tocar el flujo de inicio de sesión. &
+STK-05, STK-15 &
+Empuja a abstraer la verificación del segundo factor tras una interfaz, para poder cambiar de mecanismo sin tocar el flujo de sesión. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Operación y soporte}
+
+\begin{tabla}{|L{1.1cm}|L{5.15cm}|L{2.15cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Concern} & \cab{STK} & \cab{Consecuencia arquitectónica} \\ \hline
+\endhead
+CRN-18 &
+Me preocupa que alguien me reporte solo por haberle ganado y acabe sancionándome sin que nadie haya mirado lo que ocurrió de verdad. &
+STK-01, STK-15 &
+Si solo se cuentan reportes, hace falta un límite por usuario o una ponderación por reputación. Si se quiere revisión real, obliga a persistir contexto de chat y a construir un módulo administrativo. \\ \hline
+CRN-19 &
+Si el servidor se cae, tengo que poder recuperar las cuentas, el progreso y las partidas. Necesito que se defina qué información es aceptable perder, porque guardarlo todo al instante cuesta tiempo de respuesta. &
+STK-13 &
+Transacciones, respaldos y una política explícita de qué información es aceptable perder ante una caída. \\ \hline
+CRN-20 &
+Si mañana se decide añadir LAN, no quiero tener que rehacer el núcleo. El extremo de red tiene que poder configurarse desde fuera, no estar fijo en el código. &
+STK-05, STK-14 &
+Configuración externa del extremo de red y del modo de despliegue, en lugar de valores fijos en el código. \\ \hline
+CRN-21 &
+Si el correo o el servidor externo dejan de responder, necesito saber qué hace el sistema: reintentar, dejar la cuenta pendiente o degradarse de forma controlada. Lo que no puede es quedarse colgado. &
+STK-13, STK-14 &
+Obliga a manejar fallos de terceros mediante reintentos, estados de cuenta pendiente o degradación controlada del servicio. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Seguridad, auditoría y regulación}
+
+\begin{tabla}{|L{1.1cm}|L{5.15cm}|L{2.15cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Concern} & \cab{STK} & \cab{Consecuencia arquitectónica} \\ \hline
+\endhead
+CRN-22 &
+El transporte es TCP en claro. Si no ciframos, cualquiera en la misma red puede leer las credenciales y secuestrar la sesión de un jugador. &
+STK-15 &
+Exige decidir el cifrado sobre el socket y el almacenamiento seguro de contraseñas y secretos del segundo factor. \\ \hline
+CRN-23 &
+Doy por hecho que alguien va a modificar el cliente, así que voy a probar con uno alterado. Necesito comprobar que no puede hacer jugadas ilegales ni ver información oculta del rival. &
+STK-10, STK-15 &
+Refuerza el servidor autoritativo: el cliente propone y el servidor decide. \\ \hline
+CRN-24 &
+Necesito saber hasta dónde puede parecerse el juego a Quoridor sin infringir derechos de terceros. Si me equivoco, habrá que cambiar nombre, arte o redacción de reglas con el proyecto ya avanzado. &
+STK-17, STK-18 &
+Restringe nombre, arte y redacción de reglas, y obliga a mantenerlos desacoplados para poder cambiarlos tarde. \\ \hline
+CRN-25 &
+Antes de aceptar el juego en nuestro catálogo exigimos clasificación por edad, un empaquetado conforme a nuestras normas y una política de chat que cumpla la regulación de cada región. &
+STK-19 &
+Puede imponer requisitos de empaquetado, control parental o la desactivación del chat en ciertas regiones. \\ \hline
+\end{tabla}

@@ -1,0 +1,19 @@
+% ============================================================
+\section{Dependencias externas (DEP)}
+% ============================================================
+
+\begin{tabla}{|L{1.1cm}|L{3.4cm}|L{2.75cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Dependencia} & \cab{Estado} & \cab{Origen y cómo condiciona la arquitectura} \\ \hline
+\endhead
+DEP-01 & Servicio de correo electrónico & Condicionada (Q-03, Q-04) &
+Necesaria si el segundo factor o la validación del registro se realizan por correo. Obliga a un estado de cuenta pendiente de verificación, con reintentos y reenvío: el alta deja de ser un paso atómico. \\ \hline
+DEP-02 & Proveedor del segundo factor (aplicación autenticadora u otro mecanismo) & Firme; mecanismo sujeto a Q-03 &
+Existe con certeza porque CON-08 lo impone, pero el proveedor concreto está sin decidir. Exige gestión de secretos y una ruta de recuperación de acceso. \\ \hline
+DEP-03 & SQL Server & Firme (CON-04) &
+Acopla el sistema a su dialecto SQL. Obliga a una capa de acceso a datos aislada y a decidir qué es tolerable perder ante una caída. \\ \hline
+DEP-04 & Infraestructura de servidores y red & Firme (CON-06) &
+El modo en línea es obligatorio, por lo que el sistema depende de un servidor disponible. La latencia y las caídas quedan fuera del control del equipo y afectan directamente el cumplimiento de CON-07. \\ \hline
+DEP-08 & Plataformas de distribución & Condicionada (Q-10) &
+Solo aplica si se decide publicar. Puede provocar el rechazo del producto por clasificación por edad o por políticas de chat. \\ \hline
+\end{tabla}

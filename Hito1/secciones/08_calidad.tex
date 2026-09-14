@@ -1,0 +1,55 @@
+% ============================================================
+\section{Características de calidad (QA)}
+% ============================================================
+
+\subsection{Características descartadas}
+
+\begin{tabla}{|L{3.95cm}|Y|}
+\hline
+\filacab \cab{Característica} & \cab{Motivo del descarte} \\ \hline
+\endhead
+Escalabilidad &
+Ningún stakeholder la solicita y no existe concern sobre número de partidas concurrentes ni sobre crecimiento de usuarios. \\ \hline
+Portabilidad multiplataforma &
+CON-01 y CON-16 fijan la plataforma; no es un objetivo del proyecto. \\ \hline
+Reusabilidad &
+Ningún stakeholder está interesado en reutilizar componentes en otro producto. \\ \hline
+Interoperabilidad &
+El sistema no se integra con sistemas ajenos más allá de los ya cubiertos en DEP. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Características seleccionadas}
+
+\begin{tabla}{|L{0.95cm}|L{2.9cm}|L{5.35cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Característica} & \cab{Justificación (STK y CRN)} & \cab{Escenario que debe cumplirse} \\ \hline
+\endhead
+QA-01 & Desempeño (tiempo de respuesta) &
+CON-07, CRN-02. Interés directo de STK-01. Es la única característica con un valor numérico impuesto. &
+Al colocar una barrera, el jugador recibe confirmación visual en menos de 1 segundo, incluyendo la validación de que ningún jugador queda sin ruta. \\ \hline
+QA-02 & Usabilidad y facilidad de aprendizaje &
+CON-12, CRN-01, CRN-03. STK-01 y STK-09. El criterio de aceptación es un niño de 8 años, no un adulto. &
+Un jugador de 8 años que nunca ha visto el juego completa su primera partida sin ayuda externa. \\ \hline
+QA-03 & Seguridad del sistema &
+CON-08, CRN-22, CRN-23. STK-15. Cubre dos frentes: proteger credenciales y evitar trampas en el modo en línea. &
+Un cliente modificado que envía una jugada ilegal es rechazado por el servidor y las credenciales no viajan en claro. \\ \hline
+QA-04 & Internacionalización y localizabilidad &
+CON-05, CON-11, CRN-15, CRN-16. STK-11. Es transversal y no puede añadirse al final del desarrollo. &
+Agregar un tercer idioma no requiere modificar código ni rehacer pantallas. \\ \hline
+QA-05 & Modificabilidad &
+CRN-13, CRN-14, CRN-24, CRN-26. STK-05, STK-06 y STK-17. Justificada por las preguntas abiertas pendientes. &
+Incorporar IA o conexión LAN, cambiar el mecanismo de segundo factor o cambiar el nombre del juego no obliga a modificar el núcleo. \\ \hline
+QA-06 & Fiabilidad y disponibilidad de datos &
+CRN-06, CRN-19, CRN-21, DEP-03, DEP-04. STK-13 y STK-14. El modo en línea obligatorio hace crítica la disponibilidad del servidor. &
+Ante una desconexión, la partida y el progreso se recuperan sin corrupción de datos. \\ \hline
+QA-07 & Testabilidad &
+CRN-12, CRN-17. STK-10. Reforzada por CON-14: sin pruebas rápidas no hay incrementos semanales. &
+Una partida completa se ejecuta y se reproduce sin abrir la interfaz gráfica. \\ \hline
+QA-08 & Auditabilidad y trazabilidad &
+CON-14, CRN-08, CRN-09. STK-16. &
+Cada semana puede demostrarse un incremento funcional y rastrearse qué stakeholders y concerns lo motivaron. \\ \hline
+QA-09 & Seguridad del menor &
+CON-09, CON-10, CRN-04, CRN-18. STK-02, STK-17 y STK-19. Protege al usuario, a diferencia de QA-03 que protege al sistema. &
+Un mensaje con lenguaje inapropiado es filtrado en el servidor antes de llegar a otro jugador. \\ \hline
+\end{tabla}

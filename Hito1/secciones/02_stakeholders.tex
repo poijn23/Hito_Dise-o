@@ -1,0 +1,144 @@
+% ============================================================
+\section{Stakeholders (STK)}
+% ============================================================
+
+\subsection{Criterio de inclusión}
+
+\begin{itemize}
+  \item C1. Tiene intereses propios. Un sistema o servicio no tiene intereses; corresponde a una dependencia (DEP).
+  \item C2. Su interés puede modificar una decisión de arquitectura.
+  \item C3. No es redundante respecto de otro stakeholder ya identificado.
+\end{itemize}
+
+\begin{tabla}{|L{3.9cm}|L{2.75cm}|Y|}
+\hline
+\filacab \cab{Elemento} & \cab{Decisión} & \cab{Justificación} \\ \hline
+\endhead
+Jugadores adultos & Fusionado en STK-01 &
+Falla C3. Usa las mismas pantallas, permisos y protocolo que el resto de jugadores. Su interés por la profundidad estratégica es un concern del mismo stakeholder, no un stakeholder distinto. \\ \hline
+Equipo de desarrollo (genérico) & Eliminado &
+Falla C3. Es la suma de roles ya listados por separado; conservarlo duplica intereses. \\ \hline
+Diseñador de sonido y música & Fusionado en STK-08 &
+Falla C3. Comparte los concerns del equipo gráfico: recursos propios o con licencia y localización de contenido. \\ \hline
+Proveedor de servidores & Movido a DEP-04 &
+Falla C1. No tiene interés en la arquitectura; el sistema depende de su disponibilidad. \\ \hline
+Aplicación autenticadora, correo, SQL Server & Movidos a DEP &
+Falla C1. Son sistemas de los que se depende, no partes interesadas. \\ \hline
+Arquitecto de software & Incorporado como STK-05 &
+Es el responsable de resolver las tensiones identificadas y de justificar las decisiones estructurales. \\ \hline
+Auditor del proyecto & Incorporado como STK-16 &
+La restricción de incrementos auditables semanales implica un actor que exige trazabilidad y evidencia. \\ \hline
+Equipo de operaciones y despliegue & Incorporado como STK-14 &
+El sistema se despliega en línea y se entrega en incrementos semanales; requiere un responsable de disponibilidad y despliegue. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Usuarios y clientes}
+
+\begin{tabla}{|L{1.05cm}|L{3.0cm}|L{4.7cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Stakeholder} & \cab{Interés principal} & \cab{Por qué influye en la arquitectura} \\ \hline
+\endhead
+STK-01 & Jugador (8 años o más) &
+Reglas fáciles de aprender, controles accesibles, partidas fluidas y profundidad estratégica suficiente. &
+Fija el piso de usabilidad (un niño de 8 años debe entender por qué una jugada es inválida) y el techo de latencia. Obliga a validación local inmediata más confirmación del servidor. \\ \hline
+STK-02 & Padre o tutor &
+Contenido seguro, protección del menor y control sobre lo que hace su hijo. &
+Puede vetar el uso del juego. Impone filtro de chat, moderación y recolección mínima de datos personales, lo que afecta el modelo de cuentas y el diseño del chat. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Negocio y dirección}
+
+\begin{tabla}{|L{1.05cm}|L{3.0cm}|L{4.7cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Stakeholder} & \cab{Interés principal} & \cab{Por qué influye en la arquitectura} \\ \hline
+\endhead
+STK-03 & Profesor o cliente &
+Cumplimiento de objetivos y entrega puntual. &
+Fija el límite de 14 semanas y las auditorías semanales, lo que obliga a una arquitectura incremental y a priorizar el núcleo jugable sobre lo opcional. \\ \hline
+STK-04 & Director del proyecto &
+Cumplimiento de alcance, presupuesto y calendario. &
+Es quien recorta alcance. Presiona hacia soluciones simples y decide si las funcionalidades adicionales, como la IA y la conexión LAN, entran o salen. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Desarrollo y arquitectura}
+
+\begin{tabla}{|L{1.05cm}|L{3.0cm}|L{4.7cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Stakeholder} & \cab{Interés principal} & \cab{Por qué influye en la arquitectura} \\ \hline
+\endhead
+STK-05 & Arquitecto de software &
+Estructura coherente, modificabilidad y decisiones justificadas. &
+Decide la separación cliente-servidor, el diseño del protocolo propio sobre TCP y quién tiene autoridad sobre el estado de la partida. \\ \hline
+STK-06 & Diseñador del videojuego &
+Mecánicas originales y equilibradas. &
+Las reglas cambiarán durante el balanceo, lo que favorece un motor de reglas parametrizable. Además, la originalidad es una exigencia legal y no solo creativa. \\ \hline
+STK-07 & Programadores &
+Requisitos claros, recursos y tiempo suficientes. &
+Los requisitos aún ambiguos, como la existencia de IA o de conexión LAN, obligan a diseñar puntos de extensión en lugar de comprometerse con una solución única. \\ \hline
+STK-08 & Equipo de arte, interfaz y sonido &
+Identidad visual y sonora propia e interfaz fácil de usar. &
+La interfaz debe soportar textos de longitud variable entre inglés y español, lo que prohíbe los layouts de ancho fijo. La identidad propia viene impuesta por la propiedad intelectual de Quoridor. \\ \hline
+STK-09 & Diseñador de experiencia de usuario &
+Facilidad de aprendizaje y buena experiencia de uso. &
+Exige tutorial, retroalimentación inmediata de jugadas ilegales y previsualización de barreras, por lo que el cliente necesita validar reglas localmente y no solo el servidor. \\ \hline
+STK-10 & Equipo de pruebas (QA) &
+Estabilidad, ausencia de errores y equilibrio. &
+Necesita ejecutar y reproducir partidas sin interfaz, lo que obliga a separar el motor de reglas de la interfaz y a que las partidas sean deterministas y registrables. \\ \hline
+STK-11 & Equipo de localización &
+Traducciones claras y culturalmente apropiadas. &
+Obliga a Unicode, a externalizar todas las cadenas fuera del código y a formatear fechas y números por región. Es transversal y no puede agregarse al final. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Operación y soporte}
+
+\begin{tabla}{|L{1.85cm}|L{2.9cm}|L{4.45cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Stakeholder} & \cab{Interés principal} & \cab{Por qué influye en la arquitectura} \\ \hline
+\endhead
+STK-12 \textit{(condicionado a Q-06)} & Equipo de soporte y moderación &
+Atender reportes y sancionar conductas inapropiadas. &
+Solo existe si se opta por moderación con revisión humana. En ese caso requiere historial de chat, identidad de cuenta trazable y un módulo administrativo. \\ \hline
+STK-13 & Administrador de base de datos &
+Integridad, disponibilidad y recuperación de los datos. &
+Define el esquema en SQL Server, los respaldos y la recuperación. Su interés compite con la latencia: escribir cada jugada da trazabilidad pero cuesta tiempo. \\ \hline
+STK-14 & Equipo de operaciones y despliegue &
+Que el sistema sea desplegable y esté disponible. &
+El modo en línea exige un servidor disponible de forma continua y entregas semanales, lo que empuja hacia configuración externa y despliegue automatizado. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Seguridad, auditoría y regulación}
+
+\begin{tabla}{|L{1.05cm}|L{3.0cm}|L{4.7cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Stakeholder} & \cab{Interés principal} & \cab{Por qué influye en la arquitectura} \\ \hline
+\endhead
+STK-15 & Especialista en ciberseguridad &
+Seguridad de las cuentas y prevención de trampas. &
+Exige servidor autoritativo (el cliente no puede decidir la validez de una jugada), protección del tráfico sobre TCP y segundo factor. El servidor autoritativo es una decisión estructural mayor. \\ \hline
+STK-16 & Auditor del proyecto &
+Trazabilidad y evidencia verificable cada semana. &
+Obliga a que cada incremento sea funcional y demostrable y a mantener viva la trazabilidad entre stakeholders, concerns y decisiones, lo que condiciona el orden de construcción de los módulos. \\ \hline
+STK-17 & Asesor legal y de propiedad intelectual &
+Uso legal de nombres, diseños, reglas y recursos. &
+Puede obligar a cambiar nombre, arte o redacción de reglas en cualquier momento, por lo que conviene aislar marca y textos del código. También regula el tratamiento de datos de menores. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Externos con capacidad de decisión}
+
+\begin{tabla}{|L{1.45cm}|L{2.9cm}|L{4.7cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Stakeholder} & \cab{Interés principal} & \cab{Por qué influye en la arquitectura} \\ \hline
+\endhead
+STK-18 & Gigamic y Mirko Marchesi &
+Protección de su marca y propiedad intelectual. &
+Nunca usará el sistema, pero tiene poder legal para exigir cambios o el cese del proyecto. Por eso es un stakeholder y no dependencia. \\ \hline
+STK-19 (restricción legal) & Plataformas de distribución &
+Cumplimiento de normas técnicas, legales y de contenido. &
+Imponen clasificación por edad, requisitos de empaquetado y políticas de chat y de datos de menores, lo que condiciona el formato del entregable. \\ \hline
+\end{tabla}

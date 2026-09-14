@@ -1,0 +1,65 @@
+% ============================================================
+\section{Contexto y delimitación del sistema}
+% ============================================================
+
+\subsection{Descripción del sistema}
+
+Videojuego de estrategia por turnos desarrollado en C\#, adaptación digital de un juego de mesa inspirado principalmente en Quoridor. Cada jugador mueve su ficha por un tablero hasta alcanzar el extremo contrario, mientras coloca barreras para dificultar el avance del oponente sin bloquear por completo las rutas disponibles.
+
+Está dirigido a personas de 8 años en adelante. El proyecto busca reglas fáciles de aprender, controles accesibles y profundidad estratégica suficiente. Se contempla distribución internacional, por lo que debe soportar varios idiomas (principalmente inglés y español), Unicode, localización de textos, fechas, números y formatos regionales, una interfaz adaptable a palabras de distinta longitud, y almacenamiento en SQL Server.
+
+\begin{center}
+  \input{figuras/diagrama_contexto}
+  % Para usar la imagen original exportada de Enterprise Architect:
+  % \includegraphics[width=\textwidth]{figuras/diagrama_contexto_original.png}
+\end{center}
+
+\subsection{Elementos dentro de la frontera}
+
+\begin{tabla}{|L{4.7cm}|Y|}
+\hline
+\filacab \cab{Elemento} & \cab{Por qué pertenece al sistema} \\ \hline
+\endhead
+Cliente de juego (interfaz, tablero, controles, tutorial) &
+Es lo que el jugador manipula directamente y lo construye el equipo. \\ \hline
+Motor de reglas: movimiento, colocación de barreras y validación de que siempre exista ruta &
+Es el núcleo del juego. La validación de “no bloqueo total” obliga a un algoritmo de búsqueda de camino en cada jugada, lo que impacta directamente el presupuesto de respuesta menor a 1 segundo. \\ \hline
+Servidor de partidas en línea &
+El modo multijugador en línea es un requisito del proyecto y su lógica es responsabilidad del equipo. \\ \hline
+Gestión de turnos y estado de partida &
+Define quién tiene autoridad sobre el estado y, por tanto, si el servidor actúa como árbitro o como simple retransmisor. \\ \hline
+Capa de red sobre TCP &
+Debe construirse a la medida porque está prohibido el uso de WebSockets. \\ \hline
+Módulo de cuentas: registro, autenticación y segundo factor &
+El equipo implementa el flujo completo, aunque se apoye en servicios externos. \\ \hline
+Chat de partida y filtro de palabras &
+Se desarrolla internamente y condiciona la moderación y la seguridad de los menores. \\ \hline
+Módulo de localización &
+Atraviesa toda la interfaz y debe diseñarse desde el inicio, no agregarse al final. \\ \hline
+Capa de persistencia hacia SQL Server &
+El diseño del esquema y de las consultas es responsabilidad del equipo. \\ \hline
+\end{tabla}
+
+\subsection{Elementos fuera de la frontera}
+
+\begin{tabla}{|L{3.9cm}|L{5.2cm}|Y|}
+\hline
+\filacab \cab{Elemento externo} & \cab{Por qué queda fuera} & \cab{Consecuencia arquitectónica} \\ \hline
+\endhead
+Servicio de correo electrónico & Se consume, no se desarrolla. &
+Introduce un tercero en el flujo de cuentas; obliga a manejar fallos y reintentos. \\ \hline
+Aplicación autenticadora del segundo factor & Reside en el dispositivo del usuario. &
+Solo se implementa el estándar del lado servidor, no la aplicación. \\ \hline
+SQL Server (motor) & Producto comercial de terceros. &
+Acopla el sistema a su dialecto y a su modelo de disponibilidad. \\ \hline
+Infraestructura de servidores y red & Provista externamente. &
+La latencia y las caídas del servicio quedan fuera del control del equipo. \\ \hline
+Sistema operativo y runtime de .NET & Plataforma base. &
+Limita las plataformas en las que puede distribuirse el juego. \\ \hline
+Plataformas de distribución & Servicios de terceros. &
+Imponen requisitos de contenido y de clasificación por edad. \\ \hline
+Quoridor y su propiedad intelectual & Obra de terceros usada como referencia. &
+Obliga a reglas, nombres y arte propios. Es una restricción de diseño, no técnica. \\ \hline
+Conexión LAN & No está decidida; se evalúa como funcionalidad adicional. &
+Mientras no se resuelva Q-02, el extremo de red debe mantenerse configurable para no cerrar la opción. \\ \hline
+\end{tabla}
