@@ -1,5 +1,5 @@
 % ============================================================
-%  Preámbulo: mismo estilo que el H1, más utilidades para escenarios
+%  Preámbulo: página, fuentes, colores, títulos, tablas y escenarios
 % ============================================================
 
 % --- Página (carta, márgenes de 1 in como el original de Word) ---
@@ -8,11 +8,13 @@
 % --- Idioma y fuentes ---
 \usepackage{fontspec}
 \usepackage[spanish,es-noshorthands]{babel}
-% Calibri si está instalada (Windows); si no, Carlito (métricamente idéntica).
+% Calibri si está instalada (Windows); si no, Carlito (métricamente idéntica),
+% cargada por archivo porque TeX Live la trae pero el sistema no la registra.
 % Sin ligaduras comunes (fi, ti, ...), igual que Word.
 \IfFontExistsTF{Calibri}
   {\setmainfont{Calibri}[Ligatures={TeX,NoCommon}]}
-  {\setmainfont{Carlito}[Ligatures={TeX,NoCommon}]}
+  {\setmainfont{Carlito}[Extension=.ttf, UprightFont=*-Regular, BoldFont=*-Bold,
+     ItalicFont=*-Italic, BoldItalicFont=*-BoldItalic, Ligatures={TeX,NoCommon}]}
 \linespread{1.05}
 
 % --- Paquetes ---
@@ -21,8 +23,11 @@
 \usepackage{xltabular}
 \usepackage{titlesec}
 \usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shadows}
 \usepackage[hidelinks]{hyperref}
-\hypersetup{pdftitle={H2 Características y escenarios de calidad}}
+\hypersetup{pdftitle={Análisis de contexto, escenarios de calidad y drivers}}
 
 % --- Colores (tema de Office) ---
 \definecolor{titulo}{HTML}{1F3864}
@@ -35,9 +40,11 @@
 \setlength{\parskip}{6pt}
 \hyphenpenalty=10000
 \AtBeginDocument{\raggedright}
-\pagestyle{empty}
 
-% --- Títulos: "7. Título", "7.1 Título" y títulos de escenario ---
+% --- Numeración de página: nada en la portada, número simple en el resto ---
+\pagestyle{plain}
+
+% --- Títulos: "1. Título", "1.1 Título" y títulos de escenario ---
 \titleformat{\section}
   {\color{titulo}\bfseries\fontsize{16}{19}\selectfont}{\thesection.}{0.3em}{}
 \titleformat{\subsection}
@@ -69,6 +76,13 @@
 %   \begin{tabla}{|L{3cm}|Y|} ... \end{tabla}
 \newenvironment{tabla}[1]
   {\par\footnotesize\renewcommand{\arraystretch}{1.3}%
+   \setlength{\LTpre}{2pt}\setlength{\LTpost}{6pt}%
+   \xltabular{\textwidth}{#1}}
+  {\endxltabular\par}
+
+% Variante para las matrices STK x CRN (letra más pequeña, filas más altas)
+\newenvironment{matriz}[1]
+  {\par\fontsize{7.5}{9}\selectfont\renewcommand{\arraystretch}{2}%
    \setlength{\LTpre}{2pt}\setlength{\LTpost}{6pt}%
    \xltabular{\textwidth}{#1}}
   {\endxltabular\par}

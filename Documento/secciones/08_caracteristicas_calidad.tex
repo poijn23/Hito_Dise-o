@@ -1,8 +1,8 @@
 % ============================================================
-\section{Características de calidad}
+\section{Características de calidad}\label{sec:calidad}
 % ============================================================
 
-En el H1 se levantó una primera lista de características de calidad (QA-01 a QA-09). En esta sección se afina esa lista: cada característica se lleva a la subcaracterística de ISO/IEC~25010 que realmente importa para este juego, se justifica con los stakeholders y concerns que la exigen, se prioriza y se enlaza con los escenarios de la sección~8 que la vuelven verificable. Se conservan los identificadores del H1 para no romper la trazabilidad.
+Esta sección convierte los stakeholders, concerns, restricciones y tensiones de las secciones~\ref{sec:stakeholders} a~\ref{sec:preguntas} en características de calidad. Cada característica se lleva a la subcaracterística de ISO/IEC~25010 que realmente importa para este juego, se justifica con los stakeholders y concerns que la exigen, se prioriza y se enlaza con los escenarios de la sección~\ref{sec:escenarios} que la vuelven verificable.
 
 % ------------------------------------------------------------
 \subsection{Criterio de selección}
@@ -10,7 +10,7 @@ En el H1 se levantó una primera lista de características de calidad (QA-01 a Q
 Una característica entra en la lista solo si cumple las cuatro condiciones siguientes. Si falla alguna, se descarta o se absorbe en otra.
 
 \begin{itemize}
-  \item S1. Al menos un stakeholder la exige con un concern propio, dicho con sus palabras en el H1. No basta con que sea deseable en general.
+  \item S1. Al menos un stakeholder la exige con un concern propio, dicho con sus palabras en la sección~\ref{sec:concerns}. No basta con que sea deseable en general.
   \item S2. Una restricción, dependencia o tensión la vuelve difícil de cumplir. Si cualquier arquitectura razonable la cumple sin esfuerzo, no es un driver.
   \item S3. Obliga a elegir entre alternativas de arquitectura: cambia qué componente decide, dónde vive la lógica o qué se persiste y cuándo.
   \item S4. Se puede expresar como un escenario con una medida comprobable.
@@ -110,7 +110,7 @@ Falla S3. Que las reglas sean correctas es obligatorio en cualquier arquitectura
 % ------------------------------------------------------------
 \subsection{Tensiones entre características}
 
-Las características seleccionadas no se pueden maximizar a la vez. Cada tensión del H1 se traduce en un par de características que compiten, y los escenarios de la sección~8 fijan hasta dónde se puede ceder en cada una.
+Las características seleccionadas no se pueden maximizar a la vez. Cada tensión de la sección~\ref{sec:tensiones} se traduce en un par de características que compiten, y los escenarios de la sección~\ref{sec:escenarios} fijan hasta dónde se puede ceder en cada una.
 
 \begin{tabla}{|L{2.5cm}|L{1.8cm}|Y|L{2.2cm}|}
 \hline
@@ -125,12 +125,10 @@ QA-09 contra QA-08 & TEN-02 & Revisar sanciones con justicia exige conservar men
 \end{tabla}
 
 % ------------------------------------------------------------
-\subsection{Cambios respecto al H1}
+\subsection{Alcance de algunas características}
 
 \begin{itemize}
-  \item Cada característica se precisa con su subcaracterística de ISO/IEC~25010. Por ejemplo, QA-06 ya no es \emph{fiabilidad} en general, sino recuperabilidad, tolerancia a fallos y disponibilidad.
-  \item QA-08 se reformula como responsabilidad (accountability). La parte de proceso, que cada semana haya un incremento demostrable (CRN-08, CON-14), se cubre con QA-05 y QA-07. La trazabilidad de decisiones (CRN-09) se cumple con la documentación y no con el producto.
-  \item QA-09 pasa a tratarse como protección (safety): lo que importa es que el chat falle de forma segura cuando algo no funciona.
-  \item Se agrega QA-10, instalabilidad, condicionada a Q-10, porque CRN-25 impone requisitos de empaquetado que el H1 no había cubierto.
-  \item Se agrega la prioridad y la relación entre características mediante las tensiones.
+  \item QA-08 se entiende como responsabilidad (accountability) del producto y no como auditabilidad del proceso. La parte de proceso, que cada semana haya un incremento demostrable (CRN-08, CON-14), se cubre con QA-05 y QA-07. La trazabilidad de decisiones (CRN-09) se cumple con la documentación y no con el producto.
+  \item QA-09 se trata como protección (safety): lo que importa es que el chat falle de forma segura cuando algo no funciona.
+  \item QA-10, instalabilidad, se incluye condicionada a Q-10, porque CRN-25 impone requisitos de empaquetado que ninguna otra característica cubre.
 \end{itemize}

@@ -7,3 +7,7 @@
 *.fdb_latexmk
 *.synctex.gz
 *.xdv
+
+# Configuración local de Claude Code y archivos de macOS
+.claude/
+.DS_Store
