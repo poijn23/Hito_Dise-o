@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-17}{Regresión del incremento semanal sin interfaz}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-07 Mantenibilidad: capacidad de prueba.}
+\parte{Stakeholders}{STK-10 Equipo de pruebas, STK-16 Auditor del proyecto, STK-03 Profesor o cliente.}
+\parte{Concerns}{CRN-17: \emph{``Necesito ejecutar y repetir partidas enteras sin pasar por la interfaz. Si para reproducir un fallo tengo que ir haciendo clic en el tablero, no me da tiempo a probar lo suficiente.''} CRN-08 (cada semana algo que funcione y se pueda probar), CRN-12 (misma lógica en cliente y servidor).}
+\parte{Restricciones y dependencias}{CON-14 (incrementos auditables cada semana), CON-13 (14 semanas).}
+\parte{Tensiones y preguntas}{No aplica.}
+\parte{Tipo y prioridad}{De uso, en tiempo de desarrollo. Prioridad (A, M).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Equipo de pruebas.}
+\parte{Estímulo}{Antes de cerrar el incremento de la semana, vuelve a ejecutar todas las partidas registradas hasta ese momento para comprobar que nada se rompió.}
+\parte{Ambiente}{Cierre de un incremento semanal, sin usar la interfaz gráfica, con al menos 500 partidas registradas.}
+\parte{Artefacto}{Motor de reglas, gestión de turnos y registro de partidas.}
+\parte{Respuesta}{Cada partida se ejecuta de principio a fin sin intervención de nadie y se reproduce jugada por jugada con el mismo resultado que tuvo al registrarse. Si algo cambia, se señala la jugada exacta donde ocurrió.}
+\parte{Medida de la respuesta}{500 partidas completas se ejecutan en menos de 10 minutos. El 100~\% de las repeticiones coincide con el original. Cualquier diferencia se reporta con el número de partida y de jugada, y el fallo se puede reproducir sin abrir la interfaz. El auditor recibe el resultado como evidencia del incremento.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} Con entregas auditadas cada semana (CON-14), no hay tiempo para probar a mano todo lo anterior, y sin una regresión rápida cada incremento puede romper el anterior sin que nadie lo note hasta la auditoría. Para el auditor, el resultado de esta prueba es evidencia de que el incremento funciona (CRN-08). El escenario tiene consecuencias estructurales directas: el motor de reglas tiene que poder ejecutarse sin la interfaz, y la partida tiene que ser determinista y quedar registrada jugada por jugada. Si en algún punto hay azar o depende del reloj, las repeticiones dejan de coincidir.
+
+\textbf{Cómo se verifica.} Se ejecuta la regresión desde la línea de comandos, sin abrir el cliente, y se mide el tiempo total. Para comprobar que detecta fallos, se introduce a propósito un error en una regla y se confirma que el reporte señala la partida y la jugada correctas.

@@ -1,0 +1,73 @@
+% ------------------------------------------------------------
+\subsection{Cobertura de los escenarios}
+
+Para comprobar que los escenarios no dejan fuera nada importante del análisis de contexto, se revisa qué escenarios cubren cada stakeholder, concern, restricción y tensión.
+
+\textbf{Stakeholders.} Los 19 stakeholders aparecen en al menos un escenario.
+
+\begin{tabla}{|L{1.5cm}|Y|L{1.5cm}|Y|}
+\hline
+\filacab \cab{STK} & \cab{Escenarios} & \cab{STK} & \cab{Escenarios} \\ \hline
+\endhead
+STK-01 & ESC-01, 02, 03, 04, 07, 08, 09, 10, 16 & STK-11 & ESC-11 \\ \hline
+STK-02 & ESC-03, 04, 06 & STK-12 & ESC-07 (si Q-06 incluye revisión humana) \\ \hline
+STK-03 & ESC-13, 17 & STK-13 & ESC-09, 10 \\ \hline
+STK-04 & ESC-13, 14, 15 & STK-14 & ESC-08, 09, 10, 14, 18 \\ \hline
+STK-05 & ESC-05, 12, 14, 16 & STK-15 & ESC-03, 05, 06, 07, 16 \\ \hline
+STK-06 & ESC-12 & STK-16 & ESC-17 \\ \hline
+STK-07 & ESC-13 & STK-17 & ESC-04, 07, 15 \\ \hline
+STK-08 & ESC-11, 15 & STK-18 & ESC-15 \\ \hline
+STK-09 & ESC-01, 02, 03, 11 & STK-19 & ESC-04, 18 \\ \hline
+STK-10 & ESC-05, 12, 17 & & \\ \hline
+\end{tabla}
+
+\textbf{Concerns.} 25 de los 26 concerns tienen al menos un escenario. CRN-09 queda sin escenario de forma intencional, por el motivo que se explica al final de esta sección.
+
+\begin{tabla}{|L{1.5cm}|Y|L{1.5cm}|Y|}
+\hline
+\filacab \cab{CRN} & \cab{Escenarios} & \cab{CRN} & \cab{Escenarios} \\ \hline
+\endhead
+CRN-01 & ESC-02, 03 & CRN-14 & ESC-13, 14, 15 \\ \hline
+CRN-02 & ESC-01 & CRN-15 & ESC-11 \\ \hline
+CRN-03 & ESC-12 (parcial) & CRN-16 & ESC-11 \\ \hline
+CRN-04 & ESC-04 & CRN-17 & ESC-17 \\ \hline
+CRN-05 & ESC-03, 06, 07 & CRN-18 & ESC-07 \\ \hline
+CRN-06 & ESC-08 & CRN-19 & ESC-09 \\ \hline
+CRN-07 & ESC-13 & CRN-20 & ESC-14 \\ \hline
+CRN-08 & ESC-17 & CRN-21 & ESC-10 \\ \hline
+CRN-09 & Sin escenario (documentación) & CRN-22 & ESC-03, 06 \\ \hline
+CRN-10 & ESC-05 & CRN-23 & ESC-05 \\ \hline
+CRN-11 & ESC-05 & CRN-24 & ESC-15 \\ \hline
+CRN-12 & ESC-12, 17 & CRN-25 & ESC-04, 18 \\ \hline
+CRN-13 & ESC-12 & CRN-26 & ESC-16 \\ \hline
+\end{tabla}
+
+\textbf{Restricciones, requisitos impuestos y tensiones.}
+
+\begin{tabla}{|L{1.5cm}|Y|L{1.5cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Escenarios} & \cab{ID} & \cab{Escenarios} \\ \hline
+\endhead
+CON-01 & Sin escenario propio (ver CON-16) & REQ-02 & ESC-01 \\ \hline
+CON-02 & ESC-01, 06, 08, 14 & REQ-03 & ESC-03, 06, 16 \\ \hline
+CON-03 & ESC-05, 06 & REQ-04 & ESC-04 \\ \hline
+CON-04 & ESC-09, 11 & REQ-05 & ESC-07 \\ \hline
+CON-05 & ESC-11 & REQ-06 & ESC-02, 04, 11 \\ \hline
+CON-13 & ESC-13, 17 & REQ-07 & ESC-02, 03 \\ \hline
+CON-14 & ESC-13, 17 & TEN-01 & ESC-01, 05, 06, 12 \\ \hline
+CON-15 & ESC-12, 15 & TEN-02 & ESC-04, 07 \\ \hline
+CON-16 & ESC-18 & TEN-03 & ESC-03, 16 \\ \hline
+CON-17 & ESC-08, 14 & TEN-04 & ESC-13, 14 \\ \hline
+CON-18 & ESC-15 & TEN-05 & ESC-02, 11 \\ \hline
+REQ-01 & ESC-01, 05, 08 & TEN-06 & ESC-01, 09 \\ \hline
+\end{tabla}
+
+\textbf{Elementos sin escenario propio.}
+
+\begin{itemize}
+  \item \textbf{CRN-09} (justificar cada decisión estructural). Es una necesidad del proceso y de la documentación, no una propiedad del juego en ejecución ni de su código. Se atiende manteniendo la matriz de trazabilidad y registrando cada decisión con su motivo. Forzar un escenario de producto para este concern produciría una medida artificial.
+  \item \textbf{CON-01} (desarrollar en C\#). Es una decisión de tecnología, no una situación que el sistema enfrente. Su efecto sobre la calidad llega a través de su restricción derivada, CON-16, que sí tiene escenario (ESC-18).
+  \item \textbf{CRN-03} queda cubierto de forma parcial. ESC-12 cubre la parte de mantener el interés con variantes de reglas. La parte de aprender en pocos minutos se relaciona con ESC-02, pero no tiene una medida propia de tiempo de aprendizaje. Si el equipo de experiencia de usuario lo considera necesario, es el primer escenario que convendría agregar.
+\end{itemize}
+
+\textbf{Cómo se usarán los escenarios.} Los escenarios con prioridad (A, A) en el Utility Tree de la sección~\ref{sec:utility} son los que deben guiar la evaluación de las alternativas de arquitectura: una alternativa que no pueda cumplirlos se descarta aunque sea mejor en otros aspectos. Los de crecimiento sirven para decidir qué abstraer y qué no, de acuerdo con TEN-04. Cada medida se convierte, al construir el sistema, en una prueba del incremento semanal correspondiente.

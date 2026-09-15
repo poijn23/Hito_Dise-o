@@ -1,0 +1,87 @@
+% ============================================================
+%  Utility Tree: utilidad -> característica -> refinamiento -> escenario (I, S)
+%  Requiere \usepackage[edges]{forest} y los colores del preámbulo.
+% ============================================================
+\definecolor{lineaArbol}{HTML}{8497B0}
+\definecolor{fondoAA}{HTML}{C9D6EE}
+\definecolor{bordeMA}{HTML}{C55A11}
+\definecolor{fondoMA}{HTML}{FBE5D6}
+
+\begin{forest}
+  for tree={
+    grow'=0, forked edges, fork sep=5pt,
+    anchor=west, child anchor=west, parent anchor=east,
+    draw=lineaArbol, line width=0.4pt, rounded corners=1.2pt,
+    font=\fontsize{6.4}{7.6}\selectfont,
+    node options={align=left}, inner xsep=3pt, inner ysep=2.2pt,
+    s sep=2.2pt, l sep=9pt,
+    edge={draw=lineaArbol, line width=0.4pt},
+  },
+  where level=0{fill=titulo, text=white, font=\fontsize{7.5}{9}\selectfont\bfseries,
+                text width=1.35cm, node options={align=center}}{},
+  where level=1{fill=encabezado, font=\fontsize{6.4}{7.6}\selectfont\bfseries, text width=2.25cm}{},
+  where level=2{fill=white, text width=2.85cm}{},
+  where level=3{fill=white, text width=7.3cm}{},
+  % Resaltado de las hojas según su prioridad
+  aa/.style={fill=fondoAA, draw=titulo, line width=0.7pt},
+  ma/.style={fill=fondoMA, draw=bordeMA, line width=0.7pt},
+  [Utilidad del juego
+    [QA-01 Desempeño
+      [Comportamiento temporal
+        [{ESC-01 Colocar una barrera con el tablero avanzado \hfill\textbf{(A, A)}}, aa]]]
+    [QA-02 Usabilidad
+      [Protección contra errores de usuario
+        [{ESC-02 Un niño intenta una barrera que encierra a su rival \hfill(A, B)}]]
+      [Capacidad de aprendizaje
+        [{ESC-03 Un niño inicia sesión en un equipo nuevo con segundo factor \hfill(A, M)}]]]
+    [QA-03 Seguridad
+      [Integridad
+        [{ESC-05 Un cliente alterado intenta hacer trampa \hfill\textbf{(A, A)}}, aa]]
+      [Confidencialidad
+        [{ESC-06 Alguien captura el tráfico en una red compartida \hfill\textbf{(A, A)}}, aa]]
+      [Autenticidad
+        [{ESC-03 Un niño inicia sesión en un equipo nuevo con segundo factor \hfill(A, M)}]]]
+    [QA-04 Localizabilidad
+      [Adaptabilidad a otros idiomas y regiones
+        [{ESC-11 Se agrega un tercer idioma con otro sistema de escritura \hfill(A, M)}]]]
+    [QA-05 Mantenibilidad
+      [Modificabilidad
+        [{ESC-12 El diseñador cambia los parámetros de las reglas \hfill\textbf{(A, A)}}, aa]
+        [{ESC-14 Se aprueba el modo LAN con el modo en línea ya entregado \hfill\textbf{(M, A)}}, ma]
+        [{ESC-15 Hay que cambiar nombre, arte y recursos por motivos legales \hfill(A, B)}]
+        [{ESC-16 Se cambia el mecanismo del segundo factor \hfill(M, M)}]]
+      [Modularidad
+        [{ESC-13 Se recorta la IA en la semana 10 \hfill(A, M)}]]]
+    [QA-06 Fiabilidad
+      [Recuperabilidad y tolerancia a fallos de red
+        [{ESC-08 Se corta la conexión del jugador a mitad de su turno \hfill\textbf{(A, A)}}, aa]]
+      [Recuperabilidad y disponibilidad de datos
+        [{ESC-09 SQL Server se cae con partidas en curso \hfill\textbf{(A, A)}}, aa]]
+      [Tolerancia a fallos de terceros
+        [{ESC-10 El servicio de correo deja de responder durante registros \hfill(M, M)}]]]
+    [QA-07 Capacidad de prueba
+      [Reproducción sin interfaz
+        [{ESC-12 El diseñador cambia los parámetros de las reglas \hfill\textbf{(A, A)}}, aa]
+        [{ESC-17 Regresión del incremento semanal sin interfaz \hfill(A, M)}]]]
+    [QA-08 Responsabilidad
+      [Registro de acciones y sanciones
+        [{ESC-09 SQL Server se cae con partidas en curso \hfill\textbf{(A, A)}}, aa]
+        [{ESC-07 Varios jugadores reportan en grupo a un inocente \hfill(M, M)}]]]
+    [QA-09 Protección del menor
+      [Operación a prueba de fallos
+        [{ESC-04 Llega un mensaje inapropiado al chat de una partida \hfill(A, M)}]]
+      [Identificación de riesgos
+        [{ESC-07 Varios jugadores reportan en grupo a un inocente \hfill(M, M)}]]]
+    [QA-10 Instalabilidad
+      [Instalación en equipos limpios
+        [{ESC-18 La plataforma de distribución revisa el paquete \hfill(B, B)}]]]
+  ]
+\end{forest}
+
+\vspace{4pt}
+{\fontsize{6.8}{8}\selectfont
+\tikz[baseline=-0.6ex]\node[draw=titulo, line width=0.7pt, fill=fondoAA, rounded corners=1.2pt, minimum width=4mm, minimum height=2.6mm]{};~(A, A): guían la elección de la arquitectura
+\quad
+\tikz[baseline=-0.6ex]\node[draw=bordeMA, line width=0.7pt, fill=fondoMA, rounded corners=1.2pt, minimum width=4mm, minimum height=2.6mm]{};~(M, A): decisión temprana
+\quad
+(I, S) = (importancia, sensibilidad arquitectónica)}

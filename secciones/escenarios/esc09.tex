@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-09}{SQL Server se cae con partidas en curso}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-06 Fiabilidad: recuperabilidad y disponibilidad, y QA-08 Seguridad: responsabilidad.}
+\parte{Stakeholders}{STK-13 Administrador de base de datos, STK-14 Equipo de operaciones y despliegue, STK-01 Jugador.}
+\parte{Concerns}{CRN-19: \emph{``Si el servidor se cae, tengo que poder recuperar las cuentas, el progreso y las partidas. Necesito que se defina qué información es aceptable perder, porque guardarlo todo al instante cuesta tiempo de respuesta.''}}
+\parte{Restricciones y dependencias}{CON-04 (SQL Server), DEP-03 (SQL Server), DEP-04 (infraestructura externa).}
+\parte{Tensiones y preguntas}{TEN-06 Trazabilidad para auditoría contra tiempo de respuesta.}
+\parte{Tipo y prioridad}{Exploratorio, en tiempo de ejecución (operación degradada). Prioridad (A, A).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Falla de la infraestructura del proveedor externo donde está alojado SQL Server.}
+\parte{Estímulo}{El servidor de base de datos se detiene de golpe, como en un corte de energía, sin terminar las transacciones abiertas.}
+\parte{Ambiente}{20 partidas en línea en curso, jugadores guardando su progreso y dos cuentas registrándose en ese momento.}
+\parte{Artefacto}{Base de datos de cuentas, progreso y partidas, y capa de persistencia hacia SQL Server.}
+\parte{Respuesta}{Mientras la base de datos no está, el juego no se queda colgado: los jugadores reciben un aviso claro de lo que pasa. Al volver, las cuentas, el progreso y las partidas quedan en un estado consistente, y lo único que falta es lo que se había definido de antemano como aceptable perder, con constancia de qué fue exactamente.}
+\parte{Medida de la respuesta}{Los datos vuelven a estar disponibles en menos de 15 minutos. Se pierden 0 cuentas y 0 registros de progreso que se le hayan confirmado al jugador. De las partidas en curso se pierden como máximo las jugadas de los últimos 5 segundos. La revisión de integridad de la base de datos no encuentra ningún registro a medias. El 100~\% de lo perdido aparece en un registro que indica qué partida y qué jugadas fueron. Ningún jugador espera más de 10 segundos sin recibir un aviso.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} Para cumplir el segundo de REQ-02 conviene no escribir cada jugada en la base de datos antes de responder al jugador (TEN-06). Pero esa decisión abre una ventana de datos que se pueden perder, y CRN-19 pide justamente que se diga cuánto. Este escenario convierte esa pregunta en números: 15 minutos para volver y 5 segundos de jugadas como máximo. La infraestructura es de un tercero (DEP-04), así que el equipo no controla si la base de datos se cae, pero sí controla qué pasa después. La constancia de lo perdido responde a QA-08: sin ella no se pueden resolver disputas sobre partidas interrumpidas.
+
+\textbf{Cómo se verifica.} En un entorno de pruebas se lanzan las 20 partidas con clientes automáticos y se detiene el proceso de SQL Server de forma abrupta. Se mide cuánto tarda en volver, se compara lo guardado con el registro de lo que los clientes enviaron, se ejecuta la verificación de integridad de SQL Server y se revisa que el registro de pérdidas coincida con la diferencia encontrada.

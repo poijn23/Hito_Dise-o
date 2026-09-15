@@ -1,0 +1,33 @@
+% ============================================================
+\section{Preguntas abiertas (Q)}\label{sec:preguntas}
+% ============================================================
+
+\begin{tabla}{|L{0.95cm}|L{4.8cm}|L{2.75cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Pregunta} & \cab{Quién debe resolverla} & \cab{Cómo cambia la arquitectura según la respuesta} \\ \hline
+\endhead
+Q-01 & ¿Habrá un oponente controlado por inteligencia artificial? & STK-04, STK-06 &
+Si lo hay, es necesario abstraer el concepto de oponente y presupuestar tiempo de cómputo dentro del segundo de REQ-02. Si no lo hay, toda partida requiere dos jugadores humanos conectados. \\ \hline
+Q-02 & ¿Se soportará conexión LAN además del modo en línea obligatorio? & STK-04, STK-14 &
+Si se soporta, el extremo de red debe ser configurable y aparecen el descubrimiento local, el NAT y los cortafuegos como problemas nuevos. Si no, el servidor se asume siempre remoto y DEP-04 concentra todo el riesgo de disponibilidad. \\ \hline
+Q-03 & ¿Con qué mecanismo se implementa el segundo factor exigido por REQ-03? & STK-05, STK-15 &
+Una aplicación autenticadora implica gestión de secretos y tolerancia al desfase de reloj; el correo introduce DEP-01 en la ruta de inicio de sesión. Mientras no se decida, CRN-26 obliga a abstraerlo. \\ \hline
+Q-04 & ¿Se exigirá validación del registro por correo electrónico? & STK-15, STK-17 &
+Si se exige, DEP-01 pasa a firme y el alta deja de ser atómica. Si no, el registro es más simple pero las cuentas resultan menos recuperables y más difíciles de moderar. \\ \hline
+Q-05 & ¿Cómo se distinguirá a un menor de un adulto sin solicitar datos personales de más? & STK-02, STK-17 &
+Determina si existe consentimiento del tutor, si el chat se desactiva por omisión y qué campos existen en el esquema de cuentas. \\ \hline
+Q-06 & ¿La moderación será automática por umbral de reportes o incluirá revisión humana? & STK-04, STK-17 &
+Si es automática, no se persisten mensajes, no hay módulo administrativo y STK-12 desaparece del análisis. Si incluye revisión humana, se requiere historial de chat en SQL Server, un panel de moderación y personal asignado. \\ \hline
+Q-07 & ¿Cuál será el nombre definitivo y la identidad visual del juego? & STK-04, STK-17 &
+No modifica la estructura, pero obliga a que marca, textos y recursos gráficos estén desacoplados del código para poder sustituirlos tarde. \\ \hline
+Q-08 & ¿Qué tan lejos deben estar las reglas de las de Quoridor? & STK-06, STK-17 &
+Si obligan a introducir variantes propias, el motor de reglas debe ser parametrizable en lugar de implementar un único conjunto fijo. \\ \hline
+Q-09 & ¿Se cifrará el tráfico sobre TCP y con qué mecanismo? & STK-05, STK-15 &
+Si se cifra, se añade coste por mensaje al presupuesto de REQ-02 y se complica el protocolo propio. Si no, las credenciales y los secretos viajan expuestos, lo que contradice el propósito de REQ-03. \\ \hline
+Q-10 & ¿Se publicará el juego en alguna plataforma de distribución? & STK-04 &
+Si se publica, DEP-08 pasa a firme y aparecen requisitos de clasificación por edad y políticas de chat. Si no, la distribución es directa y STK-19 sale del análisis. \\ \hline
+Q-11 & ¿Existirá un mecanismo de apelación para el jugador sancionado? & STK-04, STK-17 &
+Si existe, obliga a conservar la evidencia que motivó la sanción y a definir un flujo de revisión. Si no, la sanción debe ser reversible manualmente o tener caducidad. \\ \hline
+Q-12 & ¿Qué se almacena de un reporte: únicamente el conteo o también el contenido? & STK-13, STK-17 &
+Define directamente el esquema de la base de datos y el volumen de datos personales de menores almacenados. \\ \hline
+\end{tabla}

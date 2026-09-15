@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-12}{El diseñador cambia los parámetros de las reglas}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-05 Mantenibilidad: modificabilidad, y QA-07 Mantenibilidad: capacidad de prueba.}
+\parte{Stakeholders}{STK-06 Diseñador del videojuego, STK-05 Arquitecto de software, STK-10 Equipo de pruebas.}
+\parte{Concerns}{CRN-13: \emph{``Mientras equilibro el juego voy a cambiar el tamaño del tablero y el número de barreras decenas de veces. No puedo depender de que alguien recompile cada vez que quiero probar un valor.''} CRN-12 (cliente y servidor con la misma lógica), CRN-03 (que el juego siga siendo interesante).}
+\parte{Restricciones y dependencias}{CON-15 (no infringir la propiedad intelectual de Quoridor).}
+\parte{Tensiones y preguntas}{TEN-01 (la validación en el cliente duplica la lógica). Q-08 (qué tan lejos deben estar las reglas de las de Quoridor).}
+\parte{Tipo y prioridad}{De crecimiento, en tiempo de desarrollo. Prioridad (A, A).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Diseñador del videojuego.}
+\parte{Estímulo}{Durante el balanceo, cambia el tablero de 9 × 9 a 7 × 7 y las barreras por jugador de 10 a 8 para probar una variante.}
+\parte{Ambiente}{Desarrollo, con un incremento semanal en curso y el juego funcionando en línea en el entorno de pruebas.}
+\parte{Artefacto}{Parámetros de las reglas y motor de reglas que usan el cliente y el servidor.}
+\parte{Respuesta}{El cambio se aplica sin recompilar. El cliente y el servidor aplican exactamente las mismas reglas con los valores nuevos, así que lo que el jugador ve como válido es lo que el servidor acepta. La interfaz dibuja el tablero nuevo.}
+\parte{Medida de la respuesta}{El cambio lo aplica el propio diseñador, sin un programador, en menos de 10 minutos y sin recompilar. El repositorio no registra cambios de código. En 500 partidas automáticas con los valores nuevos, cliente y servidor coinciden en el 100~\% de las validaciones: 0 jugadas se muestran como válidas y luego se rechazan.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} No es un cambio hipotético: el diseñador dice que lo hará decenas de veces (CRN-13), y Q-08 puede obligar a introducir variantes propias para alejarse de Quoridor por motivos legales (CON-15). Cada vez que se cambia una regla hay una oportunidad de que el cliente y el servidor dejen de coincidir, sobre todo si la validación se duplica en ambos lados para ganar fluidez (TEN-01). Cuando no coinciden, el jugador ve válida una jugada que el servidor le rechaza, que es el error que CRN-12 quiere evitar. Por eso el escenario mide dos cosas a la vez: que el cambio sea barato y que no rompa la coincidencia entre los dos lados.
+
+\textbf{Cómo se verifica.} El diseñador hace el cambio mientras alguien lo cronometra, y se revisa el repositorio para confirmar que no hubo cambios de código. Después se ejecutan 500 partidas automáticas con los valores nuevos, validando cada jugada con el motor del cliente y con el del servidor, y se cuentan las diferencias.

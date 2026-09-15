@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-07}{Varios jugadores reportan en grupo a un inocente}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-08 Seguridad: responsabilidad y no repudio, y QA-09 Protección del usuario menor.}
+\parte{Stakeholders}{STK-01 Jugador, STK-15 Especialista en ciberseguridad, STK-17 Asesor legal, STK-12 Soporte y moderación (si Q-06 incluye revisión humana).}
+\parte{Concerns}{CRN-18: \emph{``Me preocupa que alguien me reporte solo por haberle ganado y acabe sancionándome sin que nadie haya mirado lo que ocurrió de verdad.''} CRN-05 (datos mínimos del menor).}
+\parte{Restricciones y dependencias}{REQ-05 (mecanismo de moderación; referencia: sanción automática por número de reportes).}
+\parte{Tensiones y preguntas}{TEN-02 Sanción automática contra justicia de la sanción. Q-06 (moderación automática o humana), Q-11 (apelación), Q-12 (qué se guarda de un reporte).}
+\parte{Tipo y prioridad}{Exploratorio, en tiempo de ejecución (abuso del sistema). Prioridad (M, M).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Un grupo de 10 cuentas coordinadas, algunas creadas el mismo día.}
+\parte{Estímulo}{En menos de una hora, las 10 cuentas reportan por conducta inapropiada a un jugador que las ha derrotado y que no ha escrito nada ofensivo.}
+\parte{Ambiente}{Operación normal, con la moderación funcionando según el mecanismo que se elija en Q-06.}
+\parte{Artefacto}{Mecanismo de moderación, registro de reportes y módulo de cuentas.}
+\parte{Respuesta}{El jugador no recibe una sanción basada solo en reportes que no se pueden sostener. Cada reporte y cada sanción quedan registrados con quién la pidió, cuándo y por qué, de modo que una sanción aplicada pueda revisarse y revertirse. No se guardan mensajes que no hayan sido reportados.}
+\parte{Medida de la respuesta}{En una simulación con 10 cuentas coordinadas contra 20 jugadores sin conducta inapropiada, 0 de los 20 recibe una sanción automática. Para el 100~\% de las sanciones aplicadas en la prueba se puede consultar quién reportó, cuándo y el contexto guardado en menos de 5 minutos, y la sanción se puede revertir en menos de 5 minutos. La base de datos contiene 0 mensajes de conversaciones que no fueron reportadas.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} El mecanismo que el cliente propuso como referencia, sancionar al llegar a cierto número de reportes, es barato y no guarda datos de menores, pero se puede usar como arma. En un juego competitivo es previsible que alguien reporte al que le ganó, y el afectado es un niño que no tiene cómo defenderse (TEN-02). El escenario no elige entre moderación automática y humana (Q-06). Lo que fija es lo mínimo que cualquiera de las dos tiene que cumplir: que no se pueda sancionar a un inocente por coordinación y que toda sanción deje rastro para revisarla, sin guardar más conversaciones de menores de las necesarias.
+
+\textbf{Cómo se verifica.} Se crean cuentas de prueba, se simulan partidas en las que los 20 jugadores ganan sin escribir nada ofensivo y se lanzan los reportes coordinados. Después se revisa el estado de las 20 cuentas, se cronometra la consulta y la reversión de una sanción, y se consulta la base de datos para confirmar que no hay mensajes no reportados.

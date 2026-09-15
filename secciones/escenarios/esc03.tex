@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-03}{Un niño inicia sesión en un equipo nuevo con segundo factor}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-03 Seguridad: autenticidad, y QA-02 Usabilidad: capacidad de aprendizaje.}
+\parte{Stakeholders}{STK-15 Especialista en ciberseguridad, STK-01 Jugador (8 años o más), STK-02 Padre o tutor, STK-09 Diseñador de experiencia de usuario.}
+\parte{Concerns}{CRN-01 (entender al momento qué pide el juego), CRN-05 (no dar más datos del menor que los imprescindibles), CRN-22 (proteger las credenciales).}
+\parte{Restricciones y dependencias}{REQ-03 (segundo factor obligatorio), REQ-07 (comprensible para niños de 8 años), DEP-02 (proveedor del segundo factor), DEP-01 (correo, si se elige ese mecanismo).}
+\parte{Tensiones y preguntas}{TEN-03 Seguridad de acceso contra usabilidad para un niño de 8 años. Q-03 (mecanismo del segundo factor), Q-05 (cómo distinguir a un menor).}
+\parte{Tipo y prioridad}{De uso, en tiempo de ejecución. Prioridad (A, M).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Jugador de 8 años con una cuenta ya registrada y verificada.}
+\parte{Estímulo}{Inicia sesión desde un equipo que su cuenta nunca ha usado, por ejemplo, la computadora de la escuela o la de un familiar.}
+\parte{Ambiente}{Operación normal. El tutor no está al lado del niño, pero puede atender el teléfono o el correo si el mecanismo lo necesita.}
+\parte{Artefacto}{Módulo de cuentas: autenticación, segundo factor y recuperación de acceso.}
+\parte{Respuesta}{El sistema pide el segundo factor antes de dejar jugar en línea y guía al niño con pasos que puede seguir solo o con la aprobación de su tutor. En ningún caso deja entrar sin el segundo factor.}
+\parte{Medida de la respuesta}{En 100 intentos de acceso desde equipos nuevos, 0 entran sin completar el segundo factor. En una prueba con 10 niños de 8 y 9 años, al menos 8 completan el acceso en menos de 3 minutos, con un máximo de 3 pasos además del usuario y la contraseña. Tras 5 códigos incorrectos seguidos, la cuenta se bloquea temporalmente y el tutor recibe aviso en menos de 1 minuto.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} Es el punto donde chocan de frente dos restricciones impuestas: REQ-03 exige un segundo factor y REQ-07 exige que un niño de 8 años entienda el juego. Ninguna de las dos se puede negociar, y el mecanismo todavía no está decidido (Q-03). Este escenario fija el nivel que cualquier mecanismo tendrá que alcanzar, así que sirve de criterio para decidir Q-03 en lugar de elegir primero y descubrir el problema después. El equipo de la escuela no es un caso raro: es donde un niño juega más probablemente fuera de casa.
+
+\textbf{Cómo se verifica.} Los 100 accesos se automatizan con equipos o perfiles de navegador nuevos, y se comprueba en el registro del servidor que ninguno obtuvo sesión sin el segundo factor. La parte de usabilidad se mide en sesiones con niños, cronometrando desde que escriben la contraseña hasta que ven el menú de juego en línea. El bloqueo se prueba enviando 5 códigos incorrectos y midiendo cuándo llega el aviso al tutor.

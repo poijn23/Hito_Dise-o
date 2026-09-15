@@ -1,0 +1,67 @@
+% ============================================================
+\section{Restricciones y requisitos impuestos (CON, REQ)}\label{sec:restricciones}
+% ============================================================
+
+\subsection{Restricciones técnicas}
+
+\begin{tabla}{|L{1.1cm}|L{4.3cm}|L{2.75cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Restricción} & \cab{Origen} & \cab{Cómo limita las alternativas arquitectónicas} \\ \hline
+\endhead
+CON-01 & El sistema debe desarrollarse en C\#. & Cliente (STK-03) &
+Elimina motores y librerías de otros ecosistemas y fija el conjunto de herramientas disponibles. \\ \hline
+CON-02 & La comunicación debe realizarse mediante conexión TCP. & Cliente (STK-03) &
+Excluye UDP. Se gana entrega ordenada y confiable, pero se pierde control fino sobre la latencia. \\ \hline
+CON-03 & Está prohibido el uso de WebSockets. & Cliente (STK-03) &
+Elimina la delimitación de mensajes y el handshake automáticos, y obliga a diseñar un protocolo propio con serialización y versionado. \\ \hline
+CON-04 & El almacenamiento debe realizarse en SQL Server. & Cliente (STK-03) &
+Descarta alternativas NoSQL o embebidas e impone un modelo relacional para cuentas, partidas y estadísticas. \\ \hline
+CON-05 & Los textos deben almacenarse en Unicode. & Internacionalización &
+Afecta los tipos de columna, la codificación de los sockets y los archivos de recursos. Debe aplicarse de extremo a extremo. \\ \hline
+CON-16 & El sistema se ejecuta sobre la plataforma .NET y su runtime. & Derivada de CON-01 &
+Limita las plataformas en las que puede distribuirse el juego y ata el proyecto al ciclo de soporte del runtime. No es un elemento que pueda fallar: acota el conjunto de destinos posibles. \\ \hline
+CON-17 & La comunicación se apoya en la pila TCP/IP del sistema operativo, cuyo comportamiento varía entre entornos. & Derivada de CON-02 &
+Impide asumir un comportamiento de red uniforme. Si se decide soportar LAN (Q-02), añade al espacio de diseño el descubrimiento local, el NAT y los cortafuegos. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Requisitos impuestos por el cliente}
+
+Los siguientes elementos no son restricciones en sentido estricto: son requisitos funcionales y de calidad que el cliente fija de antemano, en lugar de decisiones sobre tecnología o proyecto. Se listan en esta sección, con el prefijo REQ para distinguirlos, porque comparten con las restricciones la propiedad que importa para el análisis: no son negociables y acotan las alternativas arquitectónicas antes de que exista un diseño.
+
+\begin{tabla}{|L{1.1cm}|L{4.3cm}|L{2.75cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Requisito} & \cab{Origen} & \cab{Cómo limita las alternativas arquitectónicas} \\ \hline
+\endhead
+REQ-01 & El juego debe contar con modo multijugador en línea. & Cliente (STK-03) &
+Impone una arquitectura cliente-servidor con un servidor de partidas y estado compartido. Obliga a decidir la autoridad sobre el estado de la partida y convierte a DEP-04 en una dependencia crítica. \\ \hline
+REQ-02 & El tiempo de respuesta debe ser menor a 1 segundo. & Jugadores (STK-01) &
+Presupuesto duro repartido entre la validación de ruta, la red y la persistencia. Restringe cuánto trabajo puede hacerse de forma síncrona dentro de un turno. \\ \hline
+REQ-03 & Debe existir un segundo factor de autenticación. & Cliente y seguridad (STK-03, STK-15) &
+Obliga a gestión de secretos, almacenamiento seguro y una ruta de recuperación de acceso, sea cual sea el mecanismo elegido. El mecanismo concreto queda a criterio del equipo. \\ \hline
+REQ-04 & El chat debe contar con filtro de palabras. & Padres y legal (STK-02, STK-17) &
+Al ser obligatorio y no evadible, debe ejecutarse del lado del servidor y no del cliente. \\ \hline
+REQ-05 & Debe existir un mecanismo de moderación de conductas. & Cliente (STK-03) &
+El cliente propuso como mecanismo de referencia la sanción automática al alcanzar un número determinado de reportes. Ese mecanismo no requiere conservar mensajes, solo contar reportes por cuenta. \\ \hline
+REQ-06 & El juego debe permitir cambiar de idioma. & Internacionalización (STK-03) &
+Prohíbe cadenas incrustadas en el código y anchos fijos en la interfaz. Es transversal a todo el diseño. \\ \hline
+REQ-07 & El juego debe ser comprensible para niños de 8 años o más. & Público objetivo (STK-01) &
+Descarta interfaces densas y tutoriales basados en texto largo, y exige retroalimentación visual inmediata. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Restricciones de proyecto}
+
+\begin{tabla}{|L{1.1cm}|L{4.3cm}|L{2.75cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{Restricción} & \cab{Origen} & \cab{Cómo limita las alternativas arquitectónicas} \\ \hline
+\endhead
+CON-13 & Plazo máximo de 14 semanas para la entrega. & Cliente (STK-03) &
+Descarta arquitecturas costosas de construir y obliga a que las funcionalidades adicionales sean recortables sin rehacer el núcleo. \\ \hline
+CON-14 & Deben entregarse incrementos auditables cada semana. & Auditor (STK-16) &
+Obliga a construir rebanadas verticales funcionales y a mantener la trazabilidad viva durante todo el desarrollo. \\ \hline
+CON-15 & El juego no puede infringir la propiedad intelectual de Quoridor. & Legal (STK-17, STK-18) &
+Restringe nombre, arte y redacción de reglas, que deben mantenerse aislados del núcleo lógico para poder cambiarlos tarde. Es la única restricción cuyo cumplimiento no se verifica mediante código. \\ \hline
+CON-18 & Todo recurso de terceros (fuentes, sonidos, librerías) debe tener licencia compatible con la distribución del juego. & Legal (STK-17) &
+Una licencia incompatible obliga a sustituir el recurso, por lo que fuentes, sonidos y librerías deben mantenerse desacopladas del código. \\ \hline
+\end{tabla}

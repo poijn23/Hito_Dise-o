@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-16}{Se cambia el mecanismo del segundo factor}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-05 Mantenibilidad: modificabilidad.}
+\parte{Stakeholders}{STK-05 Arquitecto de software, STK-15 Especialista en ciberseguridad, STK-01 Jugador.}
+\parte{Concerns}{CRN-26: \emph{``El mecanismo del segundo factor todavía no está decidido. Necesito dejarlo detrás de una interfaz para poder cambiarlo después sin tener que tocar el flujo de inicio de sesión.''}}
+\parte{Restricciones y dependencias}{REQ-03 (segundo factor obligatorio), DEP-01 (correo), DEP-02 (proveedor del segundo factor).}
+\parte{Tensiones y preguntas}{TEN-03 Seguridad de acceso contra usabilidad para un niño de 8 años. Q-03 (mecanismo del segundo factor).}
+\parte{Tipo y prioridad}{De crecimiento, en tiempo de desarrollo. Prioridad (M, M).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Arquitecto de software, junto con el especialista en ciberseguridad.}
+\parte{Estímulo}{Los resultados de ESC-03 muestran que los niños no completan el acceso con el mecanismo elegido, y se decide sustituirlo, por ejemplo, pasar de un código enviado por correo a una aplicación autenticadora con aprobación del tutor.}
+\parte{Ambiente}{Desarrollo, con 200 cuentas de prueba ya registradas con el mecanismo anterior.}
+\parte{Artefacto}{Módulo de cuentas: verificación del segundo factor y flujo de inicio de sesión.}
+\parte{Respuesta}{El mecanismo nuevo se incorpora sin modificar el flujo de inicio de sesión ni el resto del sistema, y las cuentas existentes pasan al mecanismo nuevo sin perder el acceso.}
+\parte{Medida de la respuesta}{El cambio cuesta menos de 3 días de trabajo. Se modifican 0 archivos del flujo de inicio de sesión fuera del componente de verificación. El 100~\% de las 200 cuentas de prueba puede iniciar sesión después del cambio. ESC-03 y ESC-06 siguen cumpliéndose.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} Q-03 está abierta y el mecanismo que se elija primero puede no servir: ESC-03 fija un nivel de usabilidad que no se sabe si alguno alcanza. Por eso el cambio de mecanismo es un escenario probable, no hipotético, y CRN-26 lo pide expresamente. Además, el cambio afecta a cuentas reales que ya existen, así que no basta con cambiar el código: los usuarios no pueden quedarse fuera de su cuenta. El escenario también protege a la seguridad durante el cambio, porque exige que ESC-06 se siga cumpliendo.
+
+\textbf{Cómo se verifica.} Se registran las 200 cuentas con el mecanismo anterior, se implementa el nuevo en una rama registrando horas y archivos modificados, y se automatiza un inicio de sesión con cada cuenta. Después se repiten las pruebas de ESC-03 y ESC-06.
