@@ -2,4 +2,148 @@
 \section{Drivers arquitectónicos (DRV)}\label{sec:drivers}
 % ============================================================
 
-(Pendiente de redacción.)
+Esta sección reúne los drivers arquitectónicos: las consideraciones que guían la arquitectura y contra las que se evaluará cada alternativa. Los ASR de la sección~\ref{sec:asr} son la parte principal de ese conjunto, pero no la única.
+
+% ------------------------------------------------------------
+\subsection{Qué es un driver y de dónde sale}
+
+Un driver arquitectónico es una razón con fuerza propia que condiciona la estructura antes de que exista un diseño: obliga a tomar una decisión estructural o descarta alternativas, sin decir cómo se resuelve. En los métodos del SEI (ADD y ATAM) los drivers se forman con los ASR, las restricciones y los objetivos de negocio: todo ASR es driver, pero no todo driver es ASR. La tabla separa el driver de tres cosas con las que se confunde, con un mismo ejemplo.
+
+\begin{tabla}{|L{2.7cm}|Y|L{5.4cm}|}
+\hline
+\filacab \cab{Elemento} & \cab{Qué es} & \cab{Ejemplo en este documento} \\ \hline
+\endhead
+Requisito & Lo que el sistema debe cumplir. Dice qué, no por qué ni cómo. & REQ-02: respuesta en menos de 1 segundo. \\ \hline
+Atributo de calidad & La categoría en que se clasifica el requisito. No tiene medida propia. & QA-01: desempeño, comportamiento temporal. \\ \hline
+Decisión de diseño & La forma concreta de cumplir el requisito. Es una salida del diseño, no una entrada. & Validación optimista: el cliente valida y muestra, el servidor revalida y revierte si difiere (TEN-01). \\ \hline
+Driver & La razón que obliga a elegir entre decisiones y descarta algunas: el requisito más lo que lo vuelve difícil. & DRV-03: el segundo se reparte entre validación, red y persistencia porque el modo en línea es obligatorio (REQ-01) y la infraestructura es externa (DEP-04). \\ \hline
+\end{tabla}
+
+\textbf{Fuentes y criterio de inclusión.} Cada driver proviene de al menos una de cuatro fuentes: los ASR de la sección~\ref{sec:asr}; las restricciones y requisitos impuestos con impacto estructural (CON-02 a CON-05, CON-13 a CON-15, CON-17, CON-18 y REQ-01 a REQ-07; CON-01 y CON-16 acotan las herramientas y no la estructura); los objetivos declarados en la sección~\ref{sec:contexto}, distribución internacional, público de 8 años en adelante y originalidad legal frente a Quoridor; y las preguntas abiertas que obligan a decidir algo hoy aunque la respuesta llegue después (Q-01, Q-02, Q-03 y Q-09, cuya primera mitad resuelve ASR-03). Una consideración entra solo si (D1) se rastrea hasta una de esas fuentes y desde ahí hasta un stakeholder, (D2) impone o descarta al menos una alternativa estructural y (D3) se puede enunciar sin nombrar una solución y no se reduce a otro driver. Resultan ocho drivers; ASR-02, ASR-04 y ASR-05 se apoyan en la misma decisión y forman uno solo (DRV-01), y ASR-03 alimenta a DRV-02 y a DRV-06. Los stakeholders de cada driver están en las tablas de la sección~\ref{sec:trazabilidad}.
+
+% ------------------------------------------------------------
+\subsection{Drivers identificados}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{DRV-01 --- Servidor autoritativo sobre el estado de la partida}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Enunciado}{El servidor es la única autoridad sobre cada partida en línea: el cliente propone, previsualiza y muestra; el servidor decide y conserva el estado vigente en su memoria, con independencia de las conexiones y de la base de datos.}
+\parte{Proviene de}{ASR-02, ASR-04 y ASR-05; CRN-10, CRN-23, CRN-06 y CRN-19; REQ-01.}
+\parte{Por qué guía la arquitectura}{No es una decisión sino la razón que la produce: el cliente no es confiable (CRN-23) y el modo en línea es obligatorio; los tres ASR la exigen desde la validación, la conexión y la persistencia, y por eso forman un solo driver. Impone un servidor que arbitra y no retransmite, sesión separada de la conexión TCP y estado vigente en la memoria del servidor; descarta el cliente autoritativo, la arquitectura entre pares y el estado solo en la base de datos. Es la decisión más cara de cambiar (CRN-10) y se toma primero.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{DRV-02 --- Protocolo propio sobre TCP}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Enunciado}{Sin WebSockets, el protocolo es un componente que el equipo diseña y que resuelve por sí mismo la delimitación, el versionado, la validación, la detección de actividad y el cifrado, con un costo por mensaje compatible con el segundo de DRV-03.}
+\parte{Proviene de}{CON-02, CON-03 y CON-17; ASR-02, ASR-03 y ASR-04; CRN-11, CRN-22 y CRN-06; Q-09.}
+\parte{Por qué guía la arquitectura}{CON-03 solo dice qué no se puede usar; el driver es su consecuencia: lo que un protocolo normalmente hereda lo construye el equipo, y ahí se deciden tres ASR. Impone un módulo con delimitación, versión, mensajes de vida, apretón de manos con sesión reasociable y cifrado, con el orden de esas capas fijado antes del primer mensaje, porque cambiarlo obliga a redesplegar todos los clientes. Resuelve el ``si'' de Q-09 y deja el ``cómo'' como alternativa a evaluar con ASR-01.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{DRV-03 --- Presupuesto de un segundo por jugada}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Enunciado}{Cada jugada en línea dispone de menos de un segundo, con mediana bajo 300 ms, repartido de forma explícita entre validación, red con cifrado y persistencia. Nada entra en el camino síncrono de la respuesta sin presupuesto asignado.}
+\parte{Proviene de}{ASR-01; REQ-02, que fija el número; REQ-01 y DEP-04, que meten la red y una infraestructura externa en el camino; CRN-02; TEN-01 y TEN-06.}
+\parte{Por qué guía la arquitectura}{Es el driver que impide maximizar los demás: DRV-01, DRV-02 y DRV-04 le cuestan tiempo (TEN-01, TEN-06). Descarta además cualquier trabajo que dependa de un tercero (DEP-03, DEP-04) dentro de la respuesta, y si Q-01 se resuelve a favor, la IA tendrá que caber en el mismo presupuesto. Depende de DRV-05: la validación en el cliente solo sirve, con 0 reversiones, con el mismo motor que el servidor.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{DRV-04 --- Política explícita de persistencia por tipo de dato}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Enunciado}{Se define de antemano qué se persiste de forma confirmada antes de responder (cuentas, progreso, sanciones) y qué de forma diferida con ventana acotada (jugadas), con constancia de lo perdido, y la capa de datos hacia SQL Server queda aislada del servidor de partidas.}
+\parte{Proviene de}{ASR-05; CON-04 y DEP-03, que fijan SQL Server y su disponibilidad; DEP-04; CRN-19; TEN-06; QA-06 y QA-08; Q-12 decide qué más se guarda de los reportes.}
+\parte{Por qué guía la arquitectura}{CON-04 por sí sola no guía nada; lo que guía es la política de pérdida que CRN-19 exige y que TEN-06 obliga a negociar con el segundo de DRV-03. Impone los dos caminos de escritura y el registro de lo pendiente de ASR-05, una capa de acceso a datos aislada con tiempos límite, y que el servidor nunca espere por la base de datos para seguir arbitrando. Descarta la política uniforme, toda síncrona o toda diferida. Da a DRV-06 el registro mínimo que ESC-07 exige (QA-08).}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{DRV-05 --- Un único motor de reglas, parametrizable y ejecutable sin interfaz}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Enunciado}{Existe una sola implementación del motor de reglas, compartida por cliente y servidor, con parámetros en configuración externa, separada de la interfaz, de la red y de la base de datos, determinista y capaz de reproducir partidas completas sin interfaz.}
+\parte{Proviene de}{ASR-06; CRN-12, CRN-13 y CRN-17; CON-15 y Q-08, que pueden obligar a variantes propias; TEN-01; QA-05 y QA-07; ESC-17 y ESC-02, que dependen de él. CON-01 lo abarata: ambos extremos son C\# y pueden compartir el mismo ensamblado.}
+\parte{Por qué guía la arquitectura}{Fija la descomposición en módulos: el motor es una biblioteca independiente con dos consumidores y parámetros fuera del código (ASR-06). Agrega lo que piden los escenarios que dependen de él: el motivo de cada rechazo (ESC-02) y el registro jugada por jugada sin azar ni reloj (ESC-17). Descarta la lógica duplicada y el motor mezclado con la interfaz. Sin él, DRV-03 no puede validar en el cliente y DRV-08 no puede probar sin interfaz; las variantes de Q-08 son parámetros, no un punto de variación de DRV-08.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{DRV-06 --- Protección del menor: control en el servidor, acceso que un niño puede completar y datos mínimos}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Enunciado}{El sistema se diseña para un niño de 8 años sin un adulto al lado, con un tutor que puede vetar el juego y un asesor legal que regula sus datos: el filtro de chat se aplica en el servidor y falla cerrado; reportes y sanciones dejan rastro; el segundo factor lo completa el niño solo o con el tutor, con el mecanismo detrás de una interfaz; y se guarda del menor lo mínimo.}
+\parte{Proviene de}{El objetivo del público de 8 años en adelante; REQ-03, REQ-04, REQ-05 y REQ-07; CRN-01, CRN-04, CRN-05, CRN-18, CRN-21, CRN-25 y CRN-26; DEP-01 y DEP-02; TEN-02 y TEN-03; Q-03 a Q-06, Q-11 y Q-12; ESC-03 y ESC-04 (A, M), ESC-07, ESC-10 y ESC-16 (M, M). ASR-03 aporta los secretos protegidos y las sesiones no reutilizables.}
+\parte{Por qué guía la arquitectura}{Es driver aunque ninguno de sus escenarios sea (A, A), porque nace de cuatro requisitos impuestos y de un objetivo con stakeholders con poder de veto (STK-02, STK-17), y porque Q-03 obliga a aislar hoy lo que se decidirá después. Impone el filtro en el servidor, donde vive la autoridad de DRV-01; un registro de reportes y sanciones con contexto sobre DRV-04; un módulo de cuentas con estados propios (aprobación del tutor, bloqueo temporal, registro pendiente) y el segundo factor tras una interfaz (CRN-26); y un esquema con datos mínimos. Descarta el filtro en el cliente, la sanción sin rastro y guardar todas las conversaciones. No decide Q-06: si habrá revisión humana y STK-12.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{DRV-07 --- Localización de extremo a extremo}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Enunciado}{Todo texto visible, fecha, número y formato se puede traducir y adaptar por región sin tocar código, y los textos viajan en Unicode desde la pantalla hasta las columnas de SQL Server y de vuelta.}
+\parte{Proviene de}{El objetivo de distribución internacional; REQ-06 y CON-05; CON-04, porque el esquema debe admitir Unicode; CRN-15 y CRN-16; TEN-05; ESC-11 (A, M).}
+\parte{Por qué guía la arquitectura}{No sale de un ASR y aun así es driver: impone tres convenciones que atraviesan interfaz, protocolo y esquema y que ningún componente puede corregir por su cuenta si se descubren tarde: catálogos de cadenas fuera del código, Unicode en el protocolo y en las columnas, y contenedores flexibles con íconos sin texto. Descarta los anchos fijos, el texto en imágenes y las codificaciones sin otros sistemas de escritura. No distingue entre particiones, y por eso ESC-11 no es ASR. Compite con DRV-06 en TEN-05.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{DRV-08 --- Plazo de 14 semanas: rebanadas verticales y puntos de variación acotados}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Enunciado}{La arquitectura se construye por rebanadas verticales que cada semana den un incremento funcional y demostrable, con una regresión sin interfaz, y con el núcleo jugable y el modo en línea antes que lo opcional. Lo que llegará con el proyecto avanzado se aísla en puntos de variación concretos, y solo en ellos: el oponente (IA, Q-01), el extremo de red y el modo de despliegue (LAN, Q-02) y la marca, el arte, la redacción de reglas y los recursos de terceros (Q-07, Q-08). El resto se codifica de forma directa.}
+\parte{Proviene de}{CON-13 y CON-14; CON-15 y CON-18, con el objetivo de originalidad legal frente a Quoridor; CRN-07, CRN-08, CRN-14, CRN-17, CRN-20 y CRN-24; TEN-04; Q-01, Q-02, Q-07 y Q-08; ESC-13 y ESC-17 (A, M), ESC-14 (M, A) y ESC-15 (A, B); QA-05 y QA-07. ASR-06 aporta el motor ejecutable sin interfaz.}
+\parte{Por qué guía la arquitectura}{Es un driver de proyecto: no cambia qué componentes existen, pero sí cuáles se pueden aislar y en qué orden se construyen. Impone el orden de construcción (motor, protocolo y servidor antes que cuentas, chat y extras, porque son lo más caro de cambiar), que cada módulo se pruebe por separado y que las medidas de los escenarios sean pruebas del incremento; una interfaz donde se decide contra quién se juega; la dirección del servidor y el modo de despliegue en configuración, con un servidor desplegable por separado; y marca, textos y recursos fuera del código, con registro de licencias. Descarta construir capa por capa, la dirección fija en el código, el servidor como hilo del cliente anfitrión, los recursos incrustados y también abstraerlo todo, porque TEN-04 limita los puntos de variación a lo que tiene alta probabilidad de cambiar. Aquí vive la decisión temprana de ESC-14 (subsección~\ref{sec:asr:esc14}) y aquí entra la originalidad legal: las variantes por Q-08 pasan por DRV-05 y el resto es contenido sustituible, incluido porque STK-18 puede detener el proyecto (CON-15). Depende de DRV-05 para la regresión semanal.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Tensiones entre drivers}
+
+Cada tensión de la sección~\ref{sec:tensiones} enfrenta a dos drivers. Donde hay ASR de por medio, se resuelve con sus medidas, evaluando cualquier alternativa contra los seis escenarios (A, A) a la vez; donde no, con el escenario que fija el límite o con la pregunta abierta que falta por resolver.
+
+\begin{tabla}{|L{1.3cm}|L{3.6cm}|Y|}
+\hline
+\filacab \cab{Tensión} & \cab{Drivers} & \cab{Cómo se resolverá} \\ \hline
+\endhead
+TEN-01 & DRV-03 contra DRV-01 y DRV-02 &
+Con ASR-01, ASR-02 y ASR-03 a la vez: se descarta la alternativa que valide y cifre pero falle la mediana de 300 ms, y al revés. DRV-05 permite validar en el cliente sin reversiones. \\ \hline
+TEN-02 & DRV-06 (datos mínimos) contra DRV-04 y DRV-06 (registro con contexto) &
+No hay ASR. ESC-07 fija el mínimo (registro de reportes y sanciones, 0 mensajes no reportados); el resto espera a Q-06, Q-11 y Q-12. \\ \hline
+TEN-03 & Interna a DRV-06: REQ-03 contra REQ-07 &
+No hay ASR. ESC-03 es el criterio para decidir Q-03; si el primer mecanismo no alcanza la medida, se cambia detrás de la interfaz (ESC-16). \\ \hline
+TEN-04 & Interna a DRV-08: alcance contra puntos de variación &
+Limitando los puntos de variación a tres, con un tope de costo cada uno: 1 día para recortar la IA (ESC-13), 5 minutos para apuntar a otro servidor (ESC-14) y 2 días para cambiar la marca (ESC-15). \\ \hline
+TEN-05 & DRV-07 contra DRV-06 &
+No hay ASR. Íconos sin texto y catálogos (DRV-07); ESC-02 y ESC-11 fijan los dos límites. \\ \hline
+TEN-06 & DRV-03 contra DRV-04 &
+Con ASR-01 y ASR-05: escritura diferida para las jugadas, con ventana de 5 segundos, y confirmada para cuentas y progreso; los dos números se miden juntos. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Qué no es driver y por qué}
+
+Varios elementos quedan fuera de la lista a propósito, porque no cumplen el criterio de inclusión.
+
+\begin{itemize}
+  \item \textbf{La instalabilidad (QA-10, ESC-18).} Depende de Q-10 y se resuelve con el empaquetado, sin tocar ningún componente (falla D2); si Q-10 se resuelve a favor, será un criterio de aceptación del paquete.
+  \item \textbf{La moderación con revisión humana (STK-12, Q-06).} Mientras Q-06 esté abierta es una posible respuesta a una pregunta, no una fuerza; incluirla como driver la decidiría por la vía de los hechos, que la sección~\ref{sec:preguntas} reserva a STK-04 y STK-17. El mínimo que cualquier respuesta debe cumplir está en DRV-06. Lo mismo vale para la IA (Q-01) y el mecanismo del segundo factor (Q-03): el driver es que la IA pueda recortarse (DRV-08) y que el mecanismo esté detrás de una interfaz (DRV-06), no la elección misma (fallan D3).
+  \item \textbf{C\#, .NET y SQL Server por sí mismos (CON-01, CON-16, CON-04).} Fijan herramientas y no estructuras; su efecto llega por DRV-05 (CON-01 abarata el motor compartido) y DRV-04 (CON-04 vuelve concreta la política de pérdida). Las características descartadas en la sección~\ref{sec:calidad} tampoco entran.
+  \item \textbf{``Seguridad'' y ``servidor autoritativo''.} La primera es un atributo de calidad (QA-03) y el segundo una decisión; el driver es lo que hay entre ambos: que el cliente no es confiable y el modo en línea es obligatorio (DRV-01). Igual que la validación optimista (TEN-01) y la escritura asíncrona (TEN-06), las decisiones son candidatas a solución y se evalúan contra los drivers.
+  \item \textbf{ESC-02 y ESC-15 como drivers propios, y CRN-09.} Los escenarios son criterios de aceptación cuya exigencia estructural ya imponen DRV-05 y DRV-08 (fallan D3); CRN-09 es una necesidad del proceso y se cumple con este documento.
+\end{itemize}

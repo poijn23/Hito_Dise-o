@@ -1,26 +1,109 @@
 % ============================================================
-\section{Matriz de trazabilidad inicial}\label{sec:trazabilidad}
+\section{Trazabilidad del análisis}\label{sec:trazabilidad}
 % ============================================================
 
-\begin{tabla}{|L{2.15cm}|L{2.4cm}|L{3.35cm}|L{2.15cm}|L{2.6cm}|Y|}
+Esta sección muestra que los artefactos del documento no son piezas sueltas: cada driver se puede seguir hacia atrás hasta el stakeholder que lo originó, y cada concern hacia adelante hasta el driver en que terminó o hasta el motivo por el que no llegó a ninguno. La cadena es situación $\rightarrow$ escenario $\rightarrow$ atributo de calidad $\rightarrow$ priorización $\rightarrow$ ASR $\rightarrow$ driver, y en cada paso se usó un criterio explícito.
+
+% ------------------------------------------------------------
+\subsection{La cadena y sus criterios de paso}
+
+\begin{tabla}{|L{2.9cm}|Y|L{2.0cm}|}
 \hline
-\filacab \cab{STK} & \cab{CRN} & \cab{CON / DEP} & \cab{TEN} & \cab{Q} & \cab{QA} \\ \hline
+\filacab \cab{Paso} & \cab{Criterio con el que se pasa de un eslabón al siguiente} & \cab{Sección} \\ \hline
 \endhead
-STK-01         & CRN-02                 & REQ-02                         & TEN-01, TEN-06 & ---              & QA-01 \\ \hline
-STK-01, STK-09 & CRN-01, CRN-03         & REQ-07                         & TEN-05         & ---              & QA-02 \\ \hline
-STK-01, STK-14 & CRN-06                 & REQ-01, DEP-04                 & ---            & Q-02             & QA-06 \\ \hline
-STK-02, STK-17 & CRN-04, CRN-05         & REQ-04, REQ-05                 & TEN-02         & Q-05, Q-06       & QA-09 \\ \hline
-STK-03         & CRN-07                 & CON-01, CON-13                 & TEN-04         & Q-01             & QA-05 \\ \hline
-STK-03, STK-16 & CRN-08, CRN-09         & CON-14                         & TEN-06         & ---              & QA-08 \\ \hline
-STK-04, STK-07 & CRN-14                 & CON-13                         & TEN-04         & Q-01, Q-02, Q-07 & QA-05 \\ \hline
-STK-05         & CRN-10, CRN-11         & CON-02, CON-03, REQ-01, CON-17 & TEN-01         & Q-09             & QA-01, QA-03 \\ \hline
-STK-05, STK-10 & CRN-12, CRN-17         & ---                            & ---            & ---              & QA-07 \\ \hline
-STK-06         & CRN-13                 & CON-15                         & ---            & Q-08             & QA-05 \\ \hline
-STK-08, STK-11 & CRN-15, CRN-16         & CON-05, REQ-06                 & TEN-05         & ---              & QA-04 \\ \hline
-STK-12         & CRN-18                 & REQ-05                         & TEN-02         & Q-06, Q-11, Q-12 & QA-09 \\ \hline
-STK-13         & CRN-19                 & CON-04, DEP-03                 & TEN-06         & Q-12             & QA-06 \\ \hline
-STK-14         & CRN-20, CRN-21         & DEP-01, DEP-04                 & ---            & Q-02, Q-04       & QA-06 \\ \hline
-STK-15         & CRN-22, CRN-23, CRN-26 & REQ-03, DEP-02                 & TEN-01, TEN-03 & Q-03, Q-04, Q-09 & QA-03 \\ \hline
-STK-17, STK-18 & CRN-24                 & CON-15                         & ---            & Q-07, Q-08       & QA-05 \\ \hline
-STK-19         & CRN-25                 & DEP-08                         & ---            & Q-10             & QA-09 \\ \hline
+Situación $\rightarrow$ escenario &
+La situación es un stakeholder que expresa un concern con sus palabras (STK, CRN), más lo que la vuelve difícil (CON, REQ, DEP, TEN, Q). Hay escenario cuando se puede expresar como estímulo, ambiente y respuesta con una medida comprobable en el peor caso realista (S4); lo que no admite medida, como CRN-09, se atiende con documentación. &
+\ref{sec:contexto} a \ref{sec:preguntas}, \ref{sec:escenarios} \\ \hline
+Escenario $\rightarrow$ atributo de calidad &
+Cada escenario se cuelga de la subcaracterística de ISO/IEC 25010 que pone a prueba. Una característica solo existe si un stakeholder la exige (S1), algo la vuelve difícil (S2), obliga a elegir entre alternativas (S3) y admite escenario (S4). &
+\ref{sec:calidad}, \ref{sec:utility} \\ \hline
+Atributo $\rightarrow$ priorización &
+Cada escenario recibe (I, S). La importancia la deciden los stakeholders, las restricciones y los requisitos impuestos; la sensibilidad la decide el arquitecto según si existen alternativas estructurales que lo cumplen y otras que no. &
+\ref{sec:utility} \\ \hline
+Priorización $\rightarrow$ ASR &
+Un escenario produce un ASR si y solo si es (A, A), y el ASR se enuncia con la medida del escenario. Los escenarios con I~=~A y S~$<$~A son criterios de aceptación; los que tienen I~$<$~A dependen de preguntas abiertas; ESC-14 (M, A) no es ASR pero condiciona a todas las alternativas. &
+\ref{sec:asr} \\ \hline
+ASR $\rightarrow$ driver &
+Un driver nace de un ASR, de una restricción o requisito impuesto con impacto estructural, o de un objetivo declarado, y debe imponer o descartar al menos una alternativa (D1 a D3). Los ASR que dependen de la misma decisión forman un solo driver. &
+\ref{sec:drivers} \\ \hline
 \end{tabla}
+
+Recorrida al revés, la cadena responde la pregunta de CRN-09, por ejemplo por qué manda el servidor y no el cliente: DRV-01 nace de ASR-02, ASR-04 y ASR-05, que son ESC-05, ESC-08 y ESC-09 valorados (A, A) porque REQ-01 impone el modo en línea y STK-15 da por hecho el cliente alterado, y esos escenarios existen porque STK-15, STK-01 y STK-13 expresaron CRN-23, CRN-06 y CRN-19.
+
+% ------------------------------------------------------------
+\subsection{Cadena completa por ASR}
+
+La tabla sigue cada ASR desde los stakeholders hasta el driver que lo recoge, con la prioridad (I, S) que lo convirtió en ASR. Se agrega la fila de ESC-14 porque, sin ser ASR, produce una decisión temprana de DRV-08. Los drivers que no salen de un ASR (DRV-06, DRV-07 y DRV-08) tienen su cadena en la matriz general.
+
+\begin{tabla}{|L{1.25cm}|L{1.9cm}|L{1.8cm}|L{2.2cm}|L{1.6cm}|L{1.4cm}|L{1.7cm}|Y|}
+\hline
+\filacab \cab{ASR} & \cab{STK} & \cab{CRN} & \cab{CON / REQ / DEP} & \cab{TEN / Q} & \cab{QA} & \cab{ESC (I, S)} & \cab{DRV} \\ \hline
+\endhead
+ASR-01 & STK-01, 09 & CRN-02 & REQ-02, 01, CON-02, DEP-04 & TEN-01, 06 & QA-01 & ESC-01 (A, A) & DRV-03; reparte el presupuesto entre DRV-01, 02 y 04 \\ \hline
+ASR-02 & STK-15, 10, 05 & CRN-23, 10, 11 & CON-03, REQ-01 & TEN-01 & QA-03 & ESC-05 (A, A) & DRV-01, 02 \\ \hline
+ASR-03 & STK-15, 02 & CRN-22, 05 & CON-02, 03, REQ-03, DEP-02 & TEN-01, Q-09 & QA-03 & ESC-06 (A, A) & DRV-02, 06 \\ \hline
+ASR-04 & STK-01, 14 & CRN-06 & CON-02, 17, REQ-01, DEP-04 & --- & QA-06 & ESC-08 (A, A) & DRV-01, 02 \\ \hline
+ASR-05 & STK-13, 14, 01 & CRN-19 & CON-04, DEP-03, 04 & TEN-06 & QA-06, 08 & ESC-09 (A, A) & DRV-04, 01 \\ \hline
+ASR-06 & STK-06, 05, 10 & CRN-13, 12, 03 & CON-15 & TEN-01, Q-08 & QA-05, 07 & ESC-12 (A, A) & DRV-05; DRV-08 usa el motor sin interfaz \\ \hline
+(no ASR) & STK-05, 14, 04 & CRN-20, 14 & CON-02, 17 & TEN-04, Q-02 & QA-05 & ESC-14 (M, A) & DRV-08 (decisión temprana; promovible a ASR-07) \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Matriz general}
+
+La matriz recorre el análisis con una fila por grupo de concerns y agrega las columnas ESC, ASR y DRV a la versión inicial. Respecto de esa versión se corrigen cuatro cosas: los requisitos impuestos se citan como REQ y no como restricciones; QA-08 se usa con su significado actual, responsabilidad del producto, y la parte de proceso de CRN-08 y CRN-09 se lleva a QA-05, QA-07 y a la documentación (sección~\ref{sec:calidad}); CRN-18 se atribuye a STK-01 y STK-15, como en la sección~\ref{sec:concerns}, con STK-12 solo si Q-06 incluye revisión humana; y CON-01 deja de aparecer junto a CRN-07, porque acota herramientas y no estructura.
+
+\begin{tabla}{|L{1.7cm}|L{1.4cm}|L{1.9cm}|L{1.7cm}|L{1.5cm}|L{2.0cm}|L{1.6cm}|Y|}
+\hline
+\filacab \cab{STK} & \cab{CRN} & \cab{CON / REQ / DEP} & \cab{TEN / Q} & \cab{QA} & \cab{ESC (I, S)} & \cab{ASR} & \cab{DRV} \\ \hline
+\endhead
+STK-01 & CRN-02 & REQ-02, 01, CON-02, DEP-04 & TEN-01, 06 & QA-01 & ESC-01 (A, A) & ASR-01 & DRV-03, 01, 02, 04 \\ \hline
+STK-01, 09 & CRN-01, 03 & REQ-07, 06 & TEN-05, 03 & QA-02 & ESC-02 (A, B); ESC-03 (A, M); ESC-12 parcial & --- (criterio de aceptación) & DRV-05, 06, 07 \\ \hline
+STK-01, 14 & CRN-06 & REQ-01, CON-02, 17, DEP-04 & Q-02 & QA-06 & ESC-08 (A, A) & ASR-04 & DRV-01, 02 \\ \hline
+STK-02, 17, 19 & CRN-04, 05 & REQ-04, 05, 03 & TEN-02, Q-05, 06 & QA-09, 03 & ESC-04 (A, M); ESC-06 (A, A); ESC-07 (M, M) & ASR-03 (por CRN-05) & DRV-06, 02 \\ \hline
+STK-03, 04 & CRN-07 & CON-13, 14 & TEN-04, Q-01 & QA-05 & ESC-13 (A, M) & --- & DRV-08 \\ \hline
+STK-03, 05, 16 & CRN-08, 09 & CON-14 & TEN-06 & QA-05, 07 (CRN-08); CRN-09 sin QA & ESC-17 (A, M) & --- & DRV-08 \\ \hline
+STK-04, 07 & CRN-14 & CON-13 & TEN-04, Q-01, 02, 07 & QA-05 & ESC-13 (A, M); ESC-14 (M, A); ESC-15 (A, B) & --- (ESC-14 promovible) & DRV-08 \\ \hline
+STK-05, 10, 15 & CRN-10, 23 & REQ-01, CON-03 & TEN-01 & QA-03 & ESC-05 (A, A) & ASR-02 & DRV-01, 02 \\ \hline
+STK-05, 07 & CRN-11 & CON-02, 03, 17 & TEN-01, Q-09 & QA-03 & ESC-05 (A, A) & ASR-02 & DRV-02 \\ \hline
+STK-05, 10 & CRN-12, 17 & CON-14 & TEN-01 & QA-05, 07 & ESC-12 (A, A); ESC-17 (A, M) & ASR-06 & DRV-05, 08 \\ \hline
+STK-06 & CRN-13, 03 & CON-15 & Q-08 & QA-05 & ESC-12 (A, A) & ASR-06 & DRV-05 \\ \hline
+STK-08, 11 & CRN-15, 16 & CON-05, REQ-06, CON-04 & TEN-05 & QA-04 & ESC-11 (A, M) & --- & DRV-07 \\ \hline
+STK-01, 15 (STK-12 si Q-06) & CRN-18 & REQ-05 & TEN-02, Q-06, 11, 12 & QA-08, 09 & ESC-07 (M, M) & --- & DRV-06 (mínimo de registro), DRV-04; revisión humana pendiente de Q-06 \\ \hline
+STK-13 & CRN-19 & CON-04, DEP-03, 04 & TEN-06, Q-12 & QA-06, 08 & ESC-09 (A, A) & ASR-05 & DRV-04, 01, 03 \\ \hline
+STK-05, 14 & CRN-20 & CON-02, 17 & TEN-04, Q-02 & QA-05 & ESC-14 (M, A) & --- (promovible a ASR-07) & DRV-08 \\ \hline
+STK-13, 14 & CRN-21 & DEP-01, 02 & Q-03, 04 & QA-06 & ESC-10 (M, M) & --- & DRV-06 (registro pendiente) \\ \hline
+STK-15 & CRN-22 & CON-02, 03, REQ-03, DEP-02 & TEN-01, Q-09 & QA-03 & ESC-06 (A, A); ESC-03 (A, M) & ASR-03 & DRV-02, 06 \\ \hline
+STK-05, 15 & CRN-26 & REQ-03, DEP-01, 02 & TEN-03, Q-03 & QA-05 & ESC-16 (M, M); ESC-03 (A, M) & --- & DRV-06 \\ \hline
+STK-17, 18 & CRN-24 & CON-15, 18 & Q-07, 08 & QA-05 & ESC-15 (A, B) & --- & DRV-08 (DRV-05 por Q-08) \\ \hline
+STK-19 & CRN-25 & DEP-08, CON-16 & Q-10 & QA-09, 10 & ESC-04 (A, M); ESC-18 (B, B) & --- & DRV-06 (política de chat); instalabilidad sin driver \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Comprobaciones de cierre}
+
+\textbf{Todo ASR nace de al menos un concern y de al menos un stakeholder.} ASR-01 sale de CRN-02 (STK-01); ASR-02 de CRN-23, CRN-10 y CRN-11 (STK-15, STK-10, STK-05, STK-07); ASR-03 de CRN-22 y CRN-05 (STK-15, STK-02, STK-17); ASR-04 de CRN-06 (STK-01, STK-14); ASR-05 de CRN-19 (STK-13); ASR-06 de CRN-13, CRN-12 y CRN-03 (STK-06, STK-05, STK-10, STK-01). En los seis casos hay además una restricción o un REQ que lo vuelve obligatorio, así que ninguno se declaró por parecer importante.
+
+\textbf{Todo driver se apoya en al menos un ASR, una restricción o requisito impuesto, o un objetivo declarado.} DRV-01 a DRV-05 nacen de ASR. DRV-06 nace del objetivo del público de 8 años y de REQ-03, REQ-04, REQ-05 y REQ-07; DRV-07, del objetivo de distribución internacional y de REQ-06 y CON-05; DRV-08, de CON-13, CON-14, CON-15 y CON-18 y del objetivo de originalidad legal, y es el único que además se apoya en una pregunta abierta, Q-02, por lo que la sección~\ref{sec:asr} explica por qué ESC-14 es driver y no ASR. Las seis tensiones aparecen en la tabla de tensiones entre drivers, y 18 de los 19 stakeholders llegan a un driver (todos menos STK-12, condicionado a Q-06).
+
+\textbf{Elementos del análisis que no llegan a ningún driver, y por qué.} Parte del análisis sirve para saber qué no condiciona la arquitectura.
+
+\begin{tabla}{|L{3.6cm}|Y|}
+\hline
+\filacab \cab{Elemento} & \cab{Por qué no llega a driver} \\ \hline
+\endhead
+CRN-09 (justificar cada decisión) &
+Necesidad del proceso, no del producto: se cumple con este documento, en particular con esta sección. Por eso TEN-06, que en la sección~\ref{sec:tensiones} lo cita junto con CRN-19, queda en la práctica como CRN-19 contra CRN-02. \\ \hline
+ESC-18, QA-10, CON-16, DEP-08, Q-10 (instalabilidad) &
+Depende de Q-10, y aun resuelta a favor se cumple con el empaquetado. Si la plataforma impusiera algo estructural, como desactivar el chat por región (CRN-25), entraría por DRV-06. \\ \hline
+CON-01 (C\#) &
+Acota las herramientas, no la estructura. Se hereda como supuesto y su efecto llega de forma indirecta por DRV-05. \\ \hline
+STK-12, Q-06, Q-11 (revisión humana y apelación) &
+STK-12 solo existe si Q-06 incluye revisión humana. El mínimo que cualquier respuesta debe cumplir está en DRV-06; el módulo administrativo, el historial y la apelación se decidirán con Q-06 y Q-11. \\ \hline
+CRN-03, parte de aprender en pocos minutos &
+Cubierto de forma parcial por ESC-12 y sin medida propia (sección~\ref{sec:escenarios}); si se agrega el escenario, entraría como criterio de aceptación bajo QA-02. \\ \hline
+ESC-02 y ESC-15; características descartadas &
+Criterios de aceptación cuya exigencia estructural ya imponen DRV-05 y DRV-08. Las características descartadas en la sección~\ref{sec:calidad} fallan S1, S2 o S3. \\ \hline
+\end{tabla}
+
+Con esto la cadena queda cerrada en ambas direcciones. Cuando se resuelvan Q-02, Q-06 o Q-10, las filas marcadas en esta sección son las que hay que revisar primero.
