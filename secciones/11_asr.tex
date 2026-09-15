@@ -2,4 +2,117 @@
 \section{Requisitos arquitectónicamente significativos (ASR)}\label{sec:asr}
 % ============================================================
 
-(Pendiente de redacción.)
+Esta sección toma los escenarios ya priorizados en el Utility Tree de la sección~\ref{sec:utility} y decide cuáles son requisitos arquitectónicamente significativos: separa los escenarios que deciden la arquitectura de los que solo la ponen a prueba.
+
+% ------------------------------------------------------------
+\subsection{Qué es un ASR y cómo se reconoce en este documento}
+
+Un ASR es un requisito cuya satisfacción depende de la estructura del sistema: de dónde viven la autoridad y el estado de la partida, de cómo se parten los componentes, de cómo se comunican y de cuándo se persiste la información. Lo que lo distingue de un requisito ordinario no es su importancia, sino que hay alternativas estructurales razonables que lo cumplen y otras que no, y que cambiar de alternativa después de construir obliga a modificar varios componentes a la vez. Por eso sirve como criterio de descarte: una arquitectura que no pueda cumplirlo se rechaza aunque sea mejor en otros aspectos. Se obtiene de los escenarios y no de la lista de requisitos impuestos, porque el escenario fija el peor caso realista y la medida, que es donde se ve si la estructura importa.
+
+\textbf{Criterio.} Un escenario da lugar a un ASR si y solo si su prioridad es (A, A). La importancia alta garantiza que es un requisito y no un deseo: incumplirlo viola una restricción o un requisito impuesto, o provoca el rechazo de un stakeholder con poder de decisión; con I~=~M o B depende de una pregunta abierta, y convertirlo en ASR sería decidirla por la puerta de atrás. La sensibilidad alta garantiza que decide la arquitectura: hay al menos dos alternativas estructurales razonables y una lo cumple y otra no; con S~=~M o B es obligatorio, pero se cumple dentro de cualquier estructura y no ayuda a elegir. Seis escenarios cumplen (A, A) y producen los seis ASR siguientes; ESC-14, el único (M, A), se trata en la subsección~\ref{sec:asr:esc14}, y los once restantes en la subsección~\ref{sec:asr:noasr}. Cada ficha enuncia el requisito con la medida del escenario, su origen y las decisiones que fuerza y alternativas que descarta; esa lista es lo que lo hace significativo.
+
+% ------------------------------------------------------------
+\subsection{ASR identificados}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{ASR-01 --- Respuesta a una jugada en menos de un segundo con el servidor de por medio}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Requisito y medida}{Con 16 barreras, 150 ms de ida y vuelta y 20 partidas: el 100~\% de 1\,000 colocaciones responde en menos de 1 segundo, con mediana menor de 300 ms; el oponente la ve en el mismo plazo; 0 barreras aceptadas se revierten con un cliente no alterado (ESC-01).}
+\parte{Origen}{STK-01, STK-09 $\rightarrow$ CRN-02 $\rightarrow$ REQ-02, REQ-01, CON-02, DEP-04 $\rightarrow$ TEN-01, TEN-06 $\rightarrow$ QA-01 $\rightarrow$ ESC-01 (A, A).}
+\parte{Decisiones que fuerza y alternativas que descarta}{Parte de la respuesta se produce en el cliente y se confirma en el servidor (con 150 ms de red no cabe otra cosa en 300 ms), y ambas validaciones tienen que coincidir. La escritura en SQL Server sale del camino síncrono. Descarta validar solo en el servidor con escritura síncrona, que suma a cada turno la latencia de DEP-03 y DEP-04; los protocolos con varios viajes por jugada; y que el cliente decida, que viola ASR-02.}
+\parte{Por qué es significativo}{El segundo se reparte entre motor, red, servidor y persistencia, y cada reparto cambia el flujo de la jugada en los cuatro; es el presupuesto que consumen ASR-02, ASR-03 y ASR-05. Si se ignorara, REQ-02 se cumpliría en el laboratorio y se incumpliría con 20 partidas y la base de datos en la ruta.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{ASR-02 --- Un cliente alterado no puede cambiar la partida}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Requisito y medida}{Con 200 mensajes inválidos de un cliente modificado, 50 al azar: el 100~\% se rechaza; el estado es idéntico antes y después; 0 respuestas con datos del rival; el servidor no se detiene; las otras 20 partidas siguen cumpliendo ASR-01; el 100~\% de los intentos queda registrado con cuenta y hora (ESC-05).}
+\parte{Origen}{STK-15, STK-10, STK-05 $\rightarrow$ CRN-23, CRN-10, CRN-11 $\rightarrow$ CON-03, REQ-01 $\rightarrow$ TEN-01 $\rightarrow$ QA-03 $\rightarrow$ ESC-05 (A, A).}
+\parte{Decisiones que fuerza y alternativas que descarta}{El servidor es la autoridad: el cliente propone y el servidor decide con el motor completo y contra el turno vigente (CRN-10). El protocolo comprueba delimitación, estructura y versión antes de que el mensaje llegue al motor (CRN-11), y cada intento se registra ligado a una sesión autenticada (QA-08). Descarta el cliente autoritativo con servidor retransmisor, la alternativa más simple pero incompatible con CRN-23, y la validación posterior a la retransmisión.}
+\parte{Por qué es significativo}{Es la decisión que CRN-10 llama la más cara de cambiar: pasar de cliente a servidor autoritativo obliga a rehacer cliente, servidor y protocolo, porque cambia quién produce el estado y quién lo consume. ASR-04 y ASR-05 dan por hecho que el estado vive en el servidor.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{ASR-03 --- El tráfico capturado no revela nada ni se puede reutilizar}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Requisito y medida}{En la captura de una sesión completa en una red compartida: 0 contraseñas, 0 códigos, 0 identificadores de sesión y 0 mensajes de chat legibles; el servidor rechaza el 100~\% de 50 reenvíos; con la protección activa, ASR-01 se sigue cumpliendo (ESC-06).}
+\parte{Origen}{STK-15, STK-02 $\rightarrow$ CRN-22, CRN-05 $\rightarrow$ CON-02, CON-03, REQ-03, DEP-02 $\rightarrow$ TEN-01, Q-09 $\rightarrow$ QA-03 $\rightarrow$ ESC-06 (A, A).}
+\parte{Decisiones que fuerza y alternativas que descarta}{Cifrar el tráfico: la medida no se cumple sin cifrado, así que este ASR responde la primera mitad de Q-09 y deja abierta la segunda, el mecanismo. Elegir dónde vive el cifrado, sobre la conexión completa o dentro del protocolo mensaje por mensaje; las dos cambian el formato de los mensajes en ambos extremos y el costo que carga ASR-01. Sesiones no reutilizables. Descarta el TCP en claro de CON-02 y CON-03, y cifrar solo las credenciales, porque el chat lleva datos de menores (CRN-05).}
+\parte{Por qué es significativo}{El sistema no hereda ningún cifrado de la plataforma: lo que no decida el equipo no existe. La protección es parte del protocolo, no una capa posterior; incorporarla tarde cambia el apretón de manos y el formato de mensajes ya desplegados en todos los clientes.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{ASR-04 --- Una desconexión no ordenada no deja la partida indefinida}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Requisito y medida}{Detección en menos de 15 segundos y cuenta regresiva para el oponente en ese plazo; si el jugador vuelve antes de 2 minutos, retoma en menos de 5 segundos con el mismo tablero, el mismo turno y 0 jugadas perdidas; si no, la partida se cierra con resultado registrado; en 50 cortes, 0 partidas indefinidas (ESC-08).}
+\parte{Origen}{STK-01, STK-14 $\rightarrow$ CRN-06 $\rightarrow$ CON-02, CON-17, REQ-01, DEP-04 $\rightarrow$ QA-06 $\rightarrow$ ESC-08 (A, A). Sin tensión propia.}
+\parte{Decisiones que fuerza y alternativas que descarta}{La sesión de partida es distinta de la conexión TCP: el estado sobrevive a la caída del socket durante 2 minutos y se asocia a una conexión nueva con un mensaje de reasociación. Detección de actividad en el protocolo propio, porque TCP no avisa de las conexiones medio abiertas y el mecanismo del sistema operativo tarda horas (CON-17). Descarta ligar la partida al socket, que deja al oponente esperando sin plazo (CRN-06), y guardar el estado solo en los clientes.}
+\parte{Por qué es significativo}{Separar sesión de conexión exige un modelo de sesiones en el servidor, un mensaje de reasociación en el protocolo y una lógica de reanudación en el cliente, que cambian a la vez. Agregarlo después obliga a modificar el apretón de manos que ASR-03 ya fijó; por eso ambos se diseñan juntos.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{ASR-05 --- Una caída de SQL Server pierde solo lo acordado y deja constancia}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Requisito y medida}{Tras una caída abrupta con 20 partidas en curso: datos disponibles en menos de 15 minutos; 0 cuentas y 0 progresos confirmados perdidos; como máximo las jugadas de los últimos 5 segundos; 0 registros a medias; el 100~\% de lo perdido en un registro con partida y jugadas; ningún jugador espera más de 10 segundos sin aviso (ESC-09).}
+\parte{Origen}{STK-13, STK-14, STK-01 $\rightarrow$ CRN-19 $\rightarrow$ CON-04, DEP-03, DEP-04 $\rightarrow$ TEN-06 $\rightarrow$ QA-06, QA-08 $\rightarrow$ ESC-09 (A, A).}
+\parte{Decisiones que fuerza y alternativas que descarta}{Persistencia por tipo de dato: transaccional y confirmada para cuentas y progreso, diferida con ventana de 5 segundos para las jugadas. El servidor conserva el estado en memoria y no se bloquea cuando la base de datos no responde; un registro de lo pendiente dice qué se perdió (QA-08). Descarta escribir cada jugada de forma síncrona, que rompe ASR-01; escribirlo todo de forma diferida, que viola la medida de 0 pérdida; y el servidor sin estado que lee la partida en cada jugada.}
+\parte{Por qué es significativo}{Decide el flujo entre el servidor de partidas y SQL Server y, con ello, qué componente tiene el estado vigente: la memoria del servidor y no la base de datos. Es la decisión de autoridad de ASR-02 y ASR-04 vista desde la persistencia, y la ventana de 5 segundos es el número en que TEN-06 se resuelve.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\Needspace*{0.12\textheight}
+\subsubsection*{ASR-06 --- Las reglas cambian sin código y sin que cliente y servidor discrepen}
+
+\begin{tabla}{|L{3.0cm}|Y|}
+\fichacab
+\parte{Requisito y medida}{El diseñador cambia tablero y barreras en menos de 10 minutos, sin programador, sin recompilar y con 0 cambios de código; en 500 partidas automáticas con los valores nuevos, cliente y servidor coinciden en el 100~\% de las validaciones (ESC-12).}
+\parte{Origen}{STK-06, STK-05, STK-10 $\rightarrow$ CRN-13, CRN-12, CRN-03 $\rightarrow$ CON-15 $\rightarrow$ TEN-01, Q-08 $\rightarrow$ QA-05, QA-07 $\rightarrow$ ESC-12 (A, A).}
+\parte{Decisiones que fuerza y alternativas que descarta}{Un único motor de reglas como biblioteca compartida por cliente y servidor (CRN-12), con los parámetros fuera del código y fijados por el servidor para cada partida (ASR-02), separado de la interfaz, determinista y ejecutable sin ella. Descarta la lógica duplicada, que es lo que sale de forma natural si la validación local de ASR-01 se construye aparte (TEN-01); los parámetros como constantes; y el motor acoplado al tablero gráfico.}
+\parte{Por qué es significativo}{Decide si la lógica del juego existe una vez o dos y fija la descomposición en módulos: una implementación y dos consumidores. Es lo que hace compatibles ASR-01 y ASR-02: sin él, ambos solo se cumplirían validando únicamente en el servidor, con todo el costo en latencia. Q-08 puede obligar a variantes propias por CON-15, así que el cambio no es hipotético.}
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{El caso de ESC-14}\label{sec:asr:esc14}
+
+ESC-14 (se aprueba el modo LAN con el modo en línea ya entregado) es el único escenario (M, A). Su sensibilidad es alta: si se asume un servidor siempre remoto, agregar la LAN después obliga a separar de nuevo servidor, configuración y red. Su importancia es media: la LAN no está decidida (Q-02) y REQ-01 solo exige el modo en línea, que funciona sin ella. \textbf{No es ASR}: falla la importancia, y declararlo ASR obligaría a evaluar toda alternativa contra un escenario que puede no ocurrir nunca, en contra de TEN-04. \textbf{Tampoco es ASR condicionado a Q-02}: no serviría hoy para descartar alternativas, que es la única función de un ASR, y el conjunto de ASR tiene que ser estable para cumplirla. \textbf{Es driver de una decisión temprana}: no decide entre las alternativas que cumplen ASR-01 a ASR-06, pero impone una condición a todas, que el extremo de red y el modo de despliegue se lean de configuración (CRN-20) y que el servidor de partidas sea un proceso desplegable por separado. Coincide con lo que ASR-02 y ASR-04 ya imponen, así que su costo se reduce a no fijar una dirección en el código; se recoge en DRV-08 y se verifica desde el primer incremento con la primera medida de ESC-14.
+
+\textbf{Regla de promoción.} Si Q-02 se resuelve a favor, ESC-14 pasa a importancia A porque se convierte en requisito y se promueve a ASR-07 con su medida completa; nada más cambia, porque la decisión que lo hace posible ya estará tomada. Si se resuelve en contra, la condición desaparece sin que nada de lo construido cambie. El identificador ASR-07 queda reservado.
+
+% ------------------------------------------------------------
+\subsection{Por qué los demás escenarios no son ASR}\label{sec:asr:noasr}
+
+Once escenarios no cumplen el criterio, y siete de ellos tienen importancia alta. La prueba es la misma para todos: ¿existe una alternativa estructural razonable que cumpla los seis ASR y no pueda cumplir este escenario? Si no existe, el escenario se resuelve dentro de la estructura elegida y no sirve para elegirla.
+
+\begin{tabla}{|L{1.2cm}|L{2.1cm}|Y|}
+\hline
+\filacab \cab{(I, S)} & \cab{Escenarios} & \cab{Por qué no son ASR y qué sí exigen} \\ \hline
+\endhead
+(A, B) & ESC-02, ESC-15 &
+Falla la sensibilidad. Son de los que más importan: un niño que no entiende la regla abandona (CRN-01, REQ-07) y un problema legal puede detener el proyecto (CON-15, STK-18). Pero la medida de 5 segundos de ESC-02 se cumple incluso validando solo en el servidor, y lo que pide al motor, informar qué camino quedaría cerrado, es una obligación sobre la interfaz del componente que ASR-06 ya define; ESC-15 usa el mismo mecanismo de recursos externos que ESC-11. Son criterios de aceptación; lo que aportan a la estructura entra por DRV-05 y DRV-08. \\ \hline
+(A, M) & ESC-03, ESC-04, ESC-11, ESC-13, ESC-17 &
+Falla la sensibilidad, en menor grado: su impacto queda dentro de un componente o de una convención, y ninguna estructura que pase los seis ASR los impide. ESC-03 vive en el módulo de cuentas (estados de sesión, aprobación del tutor, segundo factor tras una interfaz por CRN-26). En ESC-04, que el filtro viva en el servidor se deriva de ASR-02; lo que agrega, suspender el chat si el filtro falla, es una política del chat. ESC-11 impone convenciones que ninguna partición cumple mejor que otra; por eso es driver (DRV-07) y no ASR. ESC-13 se resuelve con una interfaz donde se decide contra quién se juega, y ESC-17 dentro del motor que ASR-06 ya separa. \\ \hline
+(M, M) & ESC-07, ESC-10, ESC-16 &
+Falla la importancia: dependen de Q-06, Q-11 y Q-12 (ESC-07), de Q-03 y Q-04 (ESC-10) y de Q-03 (ESC-16). Convertirlos en ASR sería decidir esas preguntas por la vía de los hechos, y ninguna corresponde al arquitecto. Cada uno fija el mínimo que cualquier respuesta tendrá que cumplir, dentro del módulo de cuentas o de moderación. \\ \hline
+(B, B) & ESC-18 &
+Fallan ambas. Solo aplica si se decide publicar (Q-10) y se resuelve con el empaquetado, distribuyendo el runtime de .NET con el juego (CON-16). No condiciona componentes, comunicación ni persistencia. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Relaciones entre los ASR}
+
+Los seis ASR no se evalúan por separado, así que una alternativa se acepta o se descarta contra los seis a la vez. \textbf{Compiten} ASR-01 con ASR-02 y ASR-03 (TEN-01), porque la validación autoritativa y el cifrado consumen parte del segundo; por eso ASR-02 y ASR-03 exigen en su propia medida que ASR-01 se siga cumpliendo. Compiten también ASR-01 y ASR-05 (TEN-06), y las medidas fijan el equilibrio en mediana bajo 300 ms y como máximo 5 segundos de jugadas perdidas. \textbf{Se refuerzan} ASR-02, ASR-04 y ASR-05, que dependen de la misma decisión, el estado autoritativo en la memoria del servidor: una alternativa que lo ponga en los clientes o en la base de datos falla los tres, y por eso forman un solo driver (DRV-01). \textbf{Se habilitan} ASR-06 y ASR-01, porque el motor único es lo que permite validar en el cliente sin reversiones, y ASR-03 y ASR-04, que modifican el mismo apretón de manos del protocolo y se diseñan juntos.
