@@ -11,3 +11,4 @@
 # Configuración local de Claude Code y archivos de macOS
 .claude/
 .DS_Store
+missfont.log

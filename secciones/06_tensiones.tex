@@ -1,0 +1,105 @@
+% ============================================================
+\section{Tensiones y conflictos (TEN)}\label{sec:tensiones}
+% ============================================================
+
+% ------------------------------------------------------------
+\subsection*{TEN-01 --- Latencia contra integridad de la partida}
+
+\begin{tabla}{|L{2.9cm}|Y|}
+\hline
+\filacab \cab{Aspecto} & \cab{Descripción} \\ \hline
+\endhead
+Conflicto &
+CRN-02 (respuesta menor a 1 segundo) frente a CRN-10 y CRN-23 (servidor autoritativo). \\ \hline
+Stakeholders &
+STK-01 (jugador) frente a STK-15 (ciberseguridad). \\ \hline
+Por qué existe &
+Colocar una barrera exige verificar que ningún jugador quede sin ruta hacia su meta. Como el modo en línea es obligatorio, esa verificación viaja por red y consume el presupuesto de REQ-02 si el servidor es la única autoridad. Si el cliente decide, la respuesta es instantánea pero un cliente modificado puede realizar jugadas ilegales. \\ \hline
+Trade-off &
+Validación optimista: el cliente valida y muestra el resultado de inmediato, y el servidor revalida y revierte si difiere. Se gana percepción de fluidez y se paga con lógica duplicada y con la complejidad de revertir una jugada ya mostrada al jugador. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection*{TEN-02 --- Sanción automática contra justicia de la sanción}
+
+\begin{tabla}{|L{2.9cm}|Y|}
+\hline
+\filacab \cab{Aspecto} & \cab{Descripción} \\ \hline
+\endhead
+Conflicto &
+Simplicidad y privacidad (REQ-05 resuelto por conteo de reportes) frente a la corrección de la sanción. \\ \hline
+Stakeholders &
+STK-15 y STK-17 (seguridad y legal) frente a STK-01 y STK-09 (jugador y experiencia de usuario). \\ \hline
+Por qué existe &
+Un umbral de reportes es barato, no guarda datos de menores y no requiere personal, pero es trivial de abusar: varios jugadores coordinados pueden sancionar a un inocente, y el sancionado no puede apelar porque no existe registro de lo que dijo. Una moderación más justa exige exactamente lo que la opción barata evita: conservar mensajes, ligarlos a una identidad y contar con personas que revisen. \\ \hline
+Trade-off &
+Conservar únicamente el contexto de los mensajes efectivamente reportados y por un plazo corto. Se gana capacidad de apelación y se reduce el abuso del sistema de reportes; se paga con almacenamiento de conversaciones de menores, con un módulo administrativo adicional y con la necesidad de personal. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection*{TEN-03 --- Seguridad de acceso contra usabilidad para un niño de 8 años}
+
+\begin{tabla}{|L{2.9cm}|Y|}
+\hline
+\filacab \cab{Aspecto} & \cab{Descripción} \\ \hline
+\endhead
+Conflicto &
+REQ-03 (segundo factor obligatorio) frente a REQ-07 y CRN-01 (comprensible para 8 años). \\ \hline
+Stakeholders &
+STK-15 (ciberseguridad) frente a STK-01 y STK-09 (jugador y experiencia de usuario). \\ \hline
+Por qué existe &
+Cualquier segundo factor añade pasos, dispositivos adicionales y la posibilidad de quedarse fuera de la cuenta. Un niño de 8 años difícilmente administra una aplicación autenticadora o códigos de respaldo. \\ \hline
+Trade-off &
+Aplicar el segundo factor de forma escalonada (solo en dispositivos nuevos o solo en cuentas con datos sensibles) y delegar la recuperación en el tutor. Se conserva el cumplimiento de REQ-03 y se paga con un modelo de cuentas más complejo y con estados de sesión adicionales. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection*{TEN-04 --- Alcance contra profundidad arquitectónica}
+
+\begin{tabla}{|L{2.9cm}|Y|}
+\hline
+\filacab \cab{Aspecto} & \cab{Descripción} \\ \hline
+\endhead
+Conflicto &
+CRN-07 (si todo cabe en 14 semanas) frente a CRN-14 (mantener abiertas las decisiones pendientes). \\ \hline
+Stakeholders &
+STK-03 y STK-04 (cliente y dirección) frente a STK-05 y STK-07 (arquitecto y programadores). \\ \hline
+Por qué existe &
+Diseñar puntos de extensión para funcionalidades no decididas cuesta tiempo hoy a cambio de flexibilidad futura. Con CON-13 de por medio, ese tiempo se resta directamente del núcleo jugable y del modo en línea, que sí son obligatorios. \\ \hline
+Trade-off &
+Abstraer únicamente lo que tiene alta probabilidad de cambiar (el oponente y el extremo de red) y codificar de forma directa el resto. Se gana capacidad de incorporar IA o LAN sin rehacer, y se paga con una indirección que puede resultar innecesaria si esas funcionalidades se descartan. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection*{TEN-05 --- Interfaz para niños contra interfaz multilingüe}
+
+\begin{tabla}{|L{2.9cm}|Y|}
+\hline
+\filacab \cab{Aspecto} & \cab{Descripción} \\ \hline
+\endhead
+Conflicto &
+CRN-01 (claridad inmediata con poco texto) frente a CRN-15 y CRN-16 (textos sustituibles de longitud variable). \\ \hline
+Stakeholders &
+STK-08 y STK-09 (arte y experiencia de usuario) frente a STK-11 (localización). \\ \hline
+Por qué existe &
+Lo más claro para un niño es el ícono con texto incrustado en la imagen, que es justamente lo que impide traducir. Además, los layouts que funcionan en español se rompen en inglés, o a la inversa. \\ \hline
+Trade-off &
+Íconos sin texto acompañados de cadenas externalizadas y contenedores flexibles. Se gana localizabilidad y se paga con más trabajo de diseño y con íconos que pueden resultar ambiguos para un niño. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection*{TEN-06 --- Trazabilidad para auditoría contra tiempo de respuesta}
+
+\begin{tabla}{|L{2.9cm}|Y|}
+\hline
+\filacab \cab{Aspecto} & \cab{Descripción} \\ \hline
+\endhead
+Conflicto &
+CRN-09 y CRN-19 (registro y trazabilidad) frente a CRN-02 (respuesta menor a 1 segundo). \\ \hline
+Stakeholders &
+STK-13 y STK-16 (administrador de base de datos y auditor) frente a STK-01 (jugador). \\ \hline
+Por qué existe &
+Persistir cada jugada aporta reproducibilidad, respaldo ante disputas y material para las pruebas, pero cada escritura en SQL Server consume parte del segundo disponible. \\ \hline
+Trade-off &
+Escritura asíncrona: responder al jugador de inmediato y persistir en segundo plano. Se protege la latencia y se acepta la posibilidad de perder las últimas jugadas ante una caída. \\ \hline
+\end{tabla}

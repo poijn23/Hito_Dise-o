@@ -1,0 +1,24 @@
+% ------------------------------------------------------------
+\escenario{ESC-14}{Se aprueba el modo LAN con el modo en línea ya entregado}
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\fichacab
+\bloque{Trazabilidad}
+\parte{Característica}{QA-05 Mantenibilidad: modificabilidad.}
+\parte{Stakeholders}{STK-05 Arquitecto de software, STK-14 Equipo de operaciones y despliegue, STK-04 Director del proyecto.}
+\parte{Concerns}{CRN-20: \emph{``Si mañana se decide añadir LAN, no quiero tener que rehacer el núcleo. El extremo de red tiene que poder configurarse desde fuera, no estar fijo en el código.''} CRN-14 (decisiones tardías sin rehacer).}
+\parte{Restricciones y dependencias}{CON-02 (TCP), CON-17 (la pila TCP/IP varía entre entornos).}
+\parte{Tensiones y preguntas}{TEN-04 Alcance contra profundidad arquitectónica. Q-02 (conexión LAN).}
+\parte{Tipo y prioridad}{De crecimiento, en tiempo de desarrollo. Prioridad (M, A).}
+\bloque{Escenario}
+\parte{Fuente del estímulo}{Director del proyecto, al resolver Q-02 a favor de la LAN.}
+\parte{Estímulo}{Pide que dos jugadores en la misma red local puedan jugar entre sí, con el servidor de partidas ejecutándose en uno de los equipos de esa red.}
+\parte{Ambiente}{Desarrollo, con el modo en línea ya entregado y funcionando.}
+\parte{Artefacto}{Configuración del extremo de red y del modo de despliegue, servidor de partidas y capa de red.}
+\parte{Respuesta}{La partida por LAN funciona usando el mismo motor de reglas, la misma gestión de turnos y el mismo protocolo. El modo en línea sigue funcionando exactamente igual.}
+\parte{Medida de la respuesta}{Apuntar el cliente a otro servidor se hace solo por configuración, sin recompilar y en menos de 5 minutos. Se modifican 0 archivos del motor de reglas, de la gestión de turnos y del protocolo. Una partida LAN con la dirección del servidor escrita a mano funciona tras menos de 3 días de trabajo de una persona. El 100~\% de las pruebas del modo en línea sigue pasando.}
+\end{tabla}
+
+\textbf{Por qué es relevante.} TEN-04 decidió abstraer solo lo que tiene alta probabilidad de cambiar, y el extremo de red es uno de los dos elementos elegidos. Este escenario comprueba si esa apuesta se cumple. Sin él, la abstracción del extremo de red no tendría forma de evaluarse y sería un costo sin medida. La LAN no es un cambio trivial: por CON-17 trae problemas nuevos, como el descubrimiento de equipos, el NAT y los cortafuegos. Por eso la medida separa lo que se debe poder hacer solo con configuración, apuntar a otro servidor, de lo que sí es trabajo nuevo, y exige que nada de ese trabajo toque el núcleo.
+
+\textbf{Cómo se verifica.} Se cambia la configuración para que el cliente use un servidor local y se cronometra. Se implementa el modo LAN en una rama registrando horas y archivos modificados. Se juega una partida entre dos equipos de la misma red y se ejecutan las pruebas del modo en línea.

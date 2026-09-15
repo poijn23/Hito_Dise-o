@@ -1,0 +1,170 @@
+% ============================================================
+\section{Utility Tree y priorización}\label{sec:utility}
+% ============================================================
+
+El Utility Tree (árbol de utilidad) organiza las necesidades de calidad del sistema en cuatro niveles: la utilidad del juego como raíz, las características de calidad de la sección~\ref{sec:calidad}, el refinamiento de cada característica en la subcaracterística que realmente importa y, en las hojas, los escenarios de la sección~\ref{sec:escenarios}. Cada hoja recibe dos valoraciones, importancia y sensibilidad arquitectónica, que sirven para decidir qué escenarios deben guiar la arquitectura y cuáles pueden resolverse después, en el diseño detallado.
+
+La prioridad se asigna a cada escenario y no a cada característica, porque una misma característica agrupa escenarios con consecuencias muy distintas. Por ejemplo, QA-05 incluye ESC-12, que decide si cliente y servidor comparten el motor de reglas, y ESC-15, que se resuelve sacando la marca y el arte del código.
+
+% ------------------------------------------------------------
+\subsection{Escalas de valoración}
+
+Cada escenario se valora con un par (I, S): \textbf{I} es la importancia para los stakeholders y \textbf{S} la sensibilidad arquitectónica. Ambas usan tres niveles: A (alta), M (media) y B (baja).
+
+\textbf{Importancia.} Mide qué tan grave es para los stakeholders que el escenario no se cumpla. La deciden los intereses, restricciones y requisitos impuestos de las secciones~\ref{sec:stakeholders} a~\ref{sec:preguntas}, no el arquitecto.
+
+\begin{tabla}{|L{1.4cm}|Y|}
+\hline
+\filacab \cab{Nivel} & \cab{Criterio} \\ \hline
+\endhead
+A & Si no se cumple, se incumple una restricción (CON) o un requisito impuesto por el cliente (REQ), o un stakeholder con poder de decisión rechaza el producto: el cliente, el padre o tutor, el asesor legal o el titular de la propiedad intelectual. \\ \hline
+M & Si no se cumple, el producto sigue siendo aceptable, pero algún stakeholder sufre una pérdida notable, o el escenario depende de una pregunta abierta con una probabilidad real de resolverse a favor. \\ \hline
+B & El escenario depende de una decisión que puede no tomarse nunca y, si no se cumple, el daño no afecta a la entrega ni a la seguridad de los usuarios. \\ \hline
+\end{tabla}
+
+\textbf{Sensibilidad arquitectónica.} Mide cuánto depende el cumplimiento del escenario de las decisiones estructurales: dónde vive la autoridad y el estado de la partida, cómo se parten los componentes, cómo se comunican y cuándo se persiste la información. La decide el arquitecto.
+
+\begin{tabla}{|L{1.4cm}|Y|}
+\hline
+\filacab \cab{Nivel} & \cab{Criterio} \\ \hline
+\endhead
+A & Hay al menos dos alternativas estructurales razonables, y una lo cumple y otra no, o lo cumplen de forma muy distinta. Cambiar de alternativa después obliga a modificar varios componentes. \\ \hline
+M & Exige una decisión de diseño acotada: una interfaz, un estado adicional o una política dentro de un componente, o una convención que todas las capas deben respetar. Puede introducirse más tarde con un costo moderado sin rehacer la estructura. \\ \hline
+B & Se cumple con implementación, contenido o configuración dentro de cualquier arquitectura razonable. No ayuda a elegir entre alternativas. \\ \hline
+\end{tabla}
+
+\textbf{Por qué sensibilidad y no dificultad.} Que un escenario sea difícil no significa que la arquitectura importe para cumplirlo. Detectar insultos disfrazados en ESC-04 es difícil, pero la dificultad está en el algoritmo del filtro y ninguna estructura la resuelve. Al revés, ESC-14 no es difícil hoy: basta con no fijar en el código dónde está el servidor. Pero si esa decisión no se toma ahora, agregar la LAN después obliga a separar de nuevo servidor, configuración y red. La dificultad mide el esfuerzo de construir; la sensibilidad mide cuánto condiciona el escenario a la estructura, que es lo que interesa para priorizar la arquitectura.
+
+% ------------------------------------------------------------
+% (el título empieza en la página del diagrama si no cabe junto con él)
+\Needspace*{0.66\textheight}
+\subsection{Árbol de utilidad}
+
+El diagrama muestra el árbol completo. Un escenario que pone a prueba dos características aparece bajo ambas con la misma valoración. Se resaltan los escenarios (A, A), que guían la elección de la arquitectura, y el único escenario (M, A), que exige una decisión temprana aunque su importancia sea media.
+
+\begin{center}
+  \input{figuras/utility_tree}
+\end{center}
+
+La tabla recorre el mismo árbol de la raíz a las hojas, en un formato más fácil de consultar.
+
+\begin{tabla}{|L{3.3cm}|L{4.2cm}|Y|L{1.2cm}|}
+\hline
+\filacab \cab{Característica} & \cab{Refinamiento} & \cab{Escenario} & \cab{(I, S)} \\ \hline
+\endhead
+QA-01 Desempeño & Comportamiento temporal & ESC-01 Colocar una barrera con el tablero avanzado & (A, A) \\ \hline
+QA-02 Usabilidad & Protección contra errores de usuario & ESC-02 Un niño intenta una barrera que encierra a su rival & (A, B) \\ \cline{2-4}
+ & Capacidad de aprendizaje & ESC-03 Un niño inicia sesión en un equipo nuevo con segundo factor & (A, M) \\ \hline
+QA-03 Seguridad & Integridad & ESC-05 Un cliente alterado intenta hacer trampa & (A, A) \\ \cline{2-4}
+ & Confidencialidad & ESC-06 Alguien captura el tráfico en una red compartida & (A, A) \\ \cline{2-4}
+ & Autenticidad & ESC-03 Un niño inicia sesión en un equipo nuevo con segundo factor & (A, M) \\ \hline
+QA-04 Localizabilidad & Adaptabilidad a otros idiomas y regiones & ESC-11 Se agrega un tercer idioma con otro sistema de escritura & (A, M) \\ \hline
+QA-05 Mantenibilidad & Modificabilidad & ESC-12 El diseñador cambia los parámetros de las reglas & (A, A) \\ \cline{3-4}
+ & & ESC-14 Se aprueba el modo LAN con el modo en línea ya entregado & (M, A) \\ \cline{3-4}
+ & & ESC-15 Hay que cambiar nombre, arte y recursos por motivos legales & (A, B) \\ \cline{3-4}
+ & & ESC-16 Se cambia el mecanismo del segundo factor & (M, M) \\ \cline{2-4}
+ & Modularidad & ESC-13 Se recorta la IA en la semana 10 & (A, M) \\ \hline
+QA-06 Fiabilidad & Recuperabilidad y tolerancia a fallos de red & ESC-08 Se corta la conexión del jugador a mitad de su turno & (A, A) \\ \cline{2-4}
+ & Recuperabilidad y disponibilidad de datos & ESC-09 SQL Server se cae con partidas en curso & (A, A) \\ \cline{2-4}
+ & Tolerancia a fallos de terceros & ESC-10 El servicio de correo deja de responder durante registros & (M, M) \\ \hline
+QA-07 Capacidad de prueba & Reproducción sin interfaz & ESC-12 El diseñador cambia los parámetros de las reglas & (A, A) \\ \cline{3-4}
+ & & ESC-17 Regresión del incremento semanal sin interfaz & (A, M) \\ \hline
+QA-08 Responsabilidad & Registro de acciones y sanciones & ESC-09 SQL Server se cae con partidas en curso & (A, A) \\ \cline{3-4}
+ & & ESC-07 Varios jugadores reportan en grupo a un inocente & (M, M) \\ \hline
+QA-09 Protección del menor & Operación a prueba de fallos & ESC-04 Llega un mensaje inapropiado al chat de una partida & (A, M) \\ \cline{2-4}
+ & Identificación de riesgos & ESC-07 Varios jugadores reportan en grupo a un inocente & (M, M) \\ \hline
+QA-10 Instalabilidad & Instalación en equipos limpios & ESC-18 La plataforma de distribución revisa el paquete & (B, B) \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Justificación de las valoraciones}
+
+\begin{tabla}{|L{1.25cm}|L{1.05cm}|L{5.6cm}|Y|}
+\hline
+\filacab \cab{ID} & \cab{(I, S)} & \cab{Por qué esa importancia} & \cab{Por qué esa sensibilidad} \\ \hline
+\endhead
+ESC-01 & (A, A) &
+REQ-02 fija el límite de 1 segundo por imposición del cliente, y colocar una barrera es una de las acciones más frecuentes del juego (STK-01, CRN-02). &
+El segundo se reparte entre tres decisiones estructurales: si valida solo el servidor o también el cliente (TEN-01), si la jugada se persiste antes o después de responder (TEN-06) y cómo viaja el mensaje por el protocolo propio. Cambiar cualquiera de ellas afecta al cliente, al servidor y a la persistencia. \\ \hline
+ESC-02 & (A, B) &
+REQ-07 exige que un niño de 8 años entienda el juego, y esta es la jugada inválida más frecuente: si no la entiende, abandona (CRN-01). &
+Se resuelve con diseño de interfaz y con que el motor de reglas informe qué camino quedaría cerrado, algo que cualquier arquitectura con un motor de reglas puede ofrecer. La medida de 5 segundos se cumple incluso validando solo en el servidor, así que no favorece a ninguna alternativa. \\ \hline
+ESC-03 & (A, M) &
+Junta dos restricciones no negociables, REQ-03 y REQ-07. Incumplir cualquiera de las dos invalida la entrega. &
+Afecta al módulo de cuentas: estados de sesión adicionales, aprobación del tutor y el mecanismo del segundo factor detrás de una interfaz (CRN-26). No cambia cómo se reparten cliente y servidor ni el protocolo de partida. \\ \hline
+ESC-04 & (A, M) &
+El filtro es obligatorio (REQ-04), y el padre o tutor puede vetar el juego si su hijo lee un insulto (CRN-04). &
+Que el filtro se aplique en el servidor se deriva de la autoridad del servidor, que ya decide ESC-05. Lo que agrega este escenario, suspender el chat cuando el filtro falla, es una política dentro del componente de chat. \\ \hline
+ESC-05 & (A, A) &
+El modo en línea es obligatorio (REQ-01), y un cliente alterado que hace trampa rompe cualquier partida. STK-15 da por hecho que ocurrirá (CRN-23). &
+Pone a prueba la decisión más cara de cambiar: quién tiene la autoridad sobre el estado de la partida (CRN-10). Depende además del diseño del protocolo propio (CON-03): delimitado, versionado y validación de mensajes. Pasar de un cliente autoritativo a un servidor autoritativo obliga a rehacer cliente, servidor y protocolo. \\ \hline
+ESC-06 & (A, A) &
+Sin confidencialidad, el segundo factor de REQ-03 no protege nada y quedan expuestos datos de menores (CRN-05, CRN-22). &
+Obliga a elegir entre cifrar la conexión completa o cifrar cada mensaje dentro del protocolo propio (Q-09), y a diseñar sesiones que no se puedan reutilizar. La elección cambia el formato de los mensajes en ambos extremos y consume parte del segundo de ESC-01. \\ \hline
+ESC-07 & (M, M) &
+El daño a un inocente es real (TEN-02), pero depende de cómo se resuelva Q-06 y no afecta a las partidas ni a la entrega. &
+Exige registrar reportes y sanciones con su contexto y una política de retención. Si Q-06 incluye revisión humana, agrega un módulo administrativo, pero separado del núcleo de partida. \\ \hline
+ESC-08 & (A, A) &
+Es la falla más común, porque los niños juegan desde redes domésticas, y es la situación que describe CRN-06. &
+Depende de dónde vive el estado autoritativo de la partida y de si el protocolo propio incluye detección de actividad, porque TCP no avisa de las conexiones medio abiertas (CON-17). Ambas decisiones atraviesan cliente, servidor y protocolo. \\ \hline
+ESC-09 & (A, A) &
+Perder cuentas o progreso ya confirmados es inaceptable para el jugador y para STK-13, y CRN-19 exige definir de antemano qué se puede perder. &
+Depende de cuándo se persiste cada jugada (TEN-06): escritura síncrona, asíncrona o con un registro intermedio. Cada alternativa cambia el flujo entre el servidor de partidas y la base de datos, y condiciona también a ESC-01. \\ \hline
+ESC-10 & (M, M) &
+Solo aplica si Q-03 o Q-04 meten el correo en el registro o en el acceso, e incluso entonces afecta a quien se registra, no a las partidas. &
+Obliga a tratar el registro como un proceso con estado pendiente y reintentos, pero dentro del módulo de cuentas. \\ \hline
+ESC-11 & (A, M) &
+El cambio de idioma es obligatorio (REQ-06) y la distribución internacional es un objetivo del proyecto. &
+No cambia la partición en componentes, pero impone convenciones que todas las capas deben respetar: catálogos de textos, Unicode en el protocolo y en SQL Server (CON-05) y contenedores flexibles en la interfaz. Es barata al inicio y cara al final, pero no distingue entre alternativas estructurales. \\ \hline
+ESC-12 & (A, A) &
+El diseñador cambiará los parámetros decenas de veces (CRN-13), y Q-08 puede obligar a introducir variantes por motivos legales (CON-15). &
+Obliga a decidir si cliente y servidor comparten un único motor de reglas o duplican la lógica (CRN-12, TEN-01), y a sacar los parámetros del código. Si se duplica el motor y después se descubre que los dos lados no coinciden, hay que reescribir ambos. \\ \hline
+ESC-13 & (A, M) &
+Con un plazo de 14 semanas (CON-13), no poder recortar la IA sin dañar lo obligatorio pone en riesgo la entrega (CRN-07). &
+Basta con abstraer el concepto de oponente detrás de una interfaz (TEN-04). Es una decisión acotada al punto donde se decide contra quién se juega. \\ \hline
+ESC-14 & (M, A) &
+La LAN no está decidida (Q-02), y el modo en línea, que sí es obligatorio, funciona sin ella. &
+Depende de la topología de despliegue: si el servidor de partidas puede ejecutarse fuera de la infraestructura remota y si el extremo de red se configura desde fuera (CRN-20). Si se asume un servidor siempre remoto, agregar la LAN obliga a separar de nuevo servidor, configuración y red. \\ \hline
+ESC-15 & (A, B) &
+El asesor legal y STK-18 pueden exigir el cambio o detener el proyecto (CON-15), y el nombre todavía no está decidido (Q-07). &
+Se cumple con el mismo mecanismo de recursos externos que exige ESC-11: marca, arte y textos fuera del código. No requiere ninguna decisión estructural adicional. \\ \hline
+ESC-16 & (M, M) &
+Solo ocurre si el primer mecanismo no cumple ESC-03, y afecta al acceso, no a las partidas. &
+Requiere que la verificación esté detrás de una interfaz (CRN-26) y una migración de cuentas, ambas dentro del módulo de cuentas. \\ \hline
+ESC-17 & (A, M) &
+Sin una regresión rápida no es viable entregar un incremento auditable cada semana (CON-14), y su resultado es la evidencia del auditor (CRN-08). &
+La separación entre motor e interfaz ya la exige ESC-12. Lo que agrega este escenario, que las partidas sean deterministas y queden registradas jugada por jugada, se resuelve dentro del motor y del registro. \\ \hline
+ESC-18 & (B, B) &
+Solo aplica si se decide publicar (Q-10), y nada indica que vaya a ocurrir dentro del plazo. &
+Se resuelve con la configuración del empaquetado, distribuyendo .NET junto con el juego, sin afectar a la estructura. \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Casos en que importancia y sensibilidad no coinciden}
+
+Importancia y sensibilidad responden a preguntas distintas, y en varios escenarios dan valores opuestos. Estos casos son los que muestran por qué no basta con una sola escala.
+
+\begin{itemize}
+  \item \textbf{Alta importancia, baja sensibilidad: ESC-02 y ESC-15.} Son de los escenarios que más importan: un niño que no entiende la regla abandona el juego, y un problema legal puede detener el proyecto. Sin embargo, ninguna alternativa de arquitectura los cumple mejor que otra. Se resuelven con diseño de interfaz y con recursos fuera del código. Siguen siendo criterios de aceptación obligatorios, pero no sirven para elegir la arquitectura.
+  \item \textbf{Alta importancia, sensibilidad media: ESC-03, ESC-04, ESC-11, ESC-13 y ESC-17.} Todos derivan de restricciones obligatorias, pero su impacto queda dentro de un componente o de una convención. Se atienden en el diseño detallado de cada módulo, siempre que la estructura elegida no los impida.
+  \item \textbf{Importancia media, alta sensibilidad: ESC-14.} La LAN no es obligatoria y el juego se puede entregar sin ella. Aun así, que se pueda agregar depende de una decisión estructural que es barata hoy y cara después. Por eso recibe atención temprana, en coherencia con TEN-04, que eligió el extremo de red como uno de los dos puntos que conviene abstraer.
+\end{itemize}
+
+% ------------------------------------------------------------
+\subsection{Escenarios que reciben mayor atención}
+
+\begin{tabla}{|L{3.1cm}|L{3.3cm}|Y|}
+\hline
+\filacab \cab{Grupo} & \cab{Escenarios} & \cab{Tratamiento} \\ \hline
+\endhead
+(A, A) & ESC-01, ESC-05, ESC-06, ESC-08, ESC-09, ESC-12 &
+Guían la elección de la arquitectura. Una alternativa que no pueda cumplir alguno se descarta, aunque sea mejor en otros aspectos. Son los candidatos a requisitos arquitectónicamente significativos. \\ \hline
+(M, A) & ESC-14 &
+No guía la elección, pero la decisión que lo mantiene posible se toma desde el inicio, porque postergarla es lo que lo vuelve caro. \\ \hline
+(A, M) y (A, B) & ESC-02, ESC-03, ESC-04, ESC-11, ESC-13, ESC-15, ESC-17 &
+Criterios de aceptación obligatorios que se resuelven en el diseño detallado de cada componente, dentro de la estructura elegida. \\ \hline
+(M, M) y (B, B) & ESC-07, ESC-10, ESC-16, ESC-18 &
+Se atienden cuando se resuelva la pregunta abierta de la que dependen: Q-06, Q-03, Q-04 o Q-10. \\ \hline
+\end{tabla}
+
+Los seis escenarios (A, A) no se pueden evaluar por separado, porque compiten entre sí. ESC-01 pide responder en menos de un segundo, mientras que ESC-05 y ESC-06 agregan validación y cifrado a ese mismo segundo (TEN-01), y ESC-09 pide persistir lo suficiente para no perder datos, lo que también le cuesta tiempo (TEN-06). ESC-08 y ESC-12 dependen de la misma decisión que ESC-05: dónde vive el estado autoritativo y si el motor de reglas es uno solo para cliente y servidor. Por eso, cualquier alternativa de arquitectura se evalúa contra los seis a la vez, y no se da por buena una solución para uno si rompe otro.

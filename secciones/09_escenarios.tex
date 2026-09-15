@@ -1,0 +1,96 @@
+% ============================================================
+\section{Identificación y formulación de escenarios}\label{sec:escenarios}
+% ============================================================
+
+Los escenarios parten del análisis de contexto de las secciones~\ref{sec:contexto} a~\ref{sec:preguntas} y conservan sus identificadores. Cada uno describe una situación que el juego va a enfrentar de verdad y termina en una medida comprobable, porque un escenario que no se puede comprobar no sirve para decidir nada sobre la arquitectura. Ninguno propone una solución, y es a propósito: la solución es justamente lo que se discute después con los escenarios como criterio.
+
+% ------------------------------------------------------------
+\subsection{Estructura de los escenarios}
+
+Cada escenario se presenta en una ficha con dos bloques. El bloque de \textbf{trazabilidad} indica de dónde sale: la característica de calidad de la sección~\ref{sec:calidad}, y los stakeholders, concerns, restricciones, tensiones y preguntas abiertas de las secciones~\ref{sec:stakeholders} a~\ref{sec:preguntas}, el tipo de escenario y su prioridad, expresada como (importancia, sensibilidad arquitectónica) con las escalas de la sección~\ref{sec:utility}. El bloque de \textbf{escenario} contiene las seis partes, que se usan siempre con este significado:
+
+\begin{tabla}{|L{3.2cm}|Y|}
+\hline
+\filacab \cab{Parte} & \cab{Qué contiene en este documento} \\ \hline
+\endhead
+\textbf{Fuente del estímulo} & Quién o qué provoca el evento: una persona con un rol concreto (un niño de 8 años, un atacante, el diseñador) o un sistema externo (SQL Server, la red doméstica del jugador). \\ \hline
+\textbf{Estímulo} & El evento concreto que llega al sistema, descrito con suficiente detalle para poder reproducirlo en una prueba. \\ \hline
+\textbf{Ambiente} & El estado del sistema cuando llega el estímulo: operación normal, degradada, bajo ataque, en desarrollo o en instalación. Se elige el peor caso realista, no el promedio. \\ \hline
+\textbf{Artefacto} & Los elementos dentro de la frontera definida en la sección~\ref{sec:contexto} que reciben el estímulo y tienen que responder. \\ \hline
+\textbf{Respuesta} & Lo que debe observarse desde fuera, sin decir cómo se logra por dentro. \\ \hline
+\textbf{Medida de la respuesta} & Números o condiciones de sí o no que se pueden comprobar, con la cantidad de repeticiones de la prueba. \\ \hline
+\end{tabla}
+
+Después de cada ficha se explica \textbf{por qué el escenario es relevante} para este sistema y \textbf{cómo se verifica} la medida.
+
+El tipo de escenario sigue la clasificación de ATAM:
+
+\begin{itemize}
+  \item \textbf{De uso}: el sistema en operación normal, lo que ocurre todos los días.
+  \item \textbf{Exploratorio}: el sistema al límite, bajo ataque o con una falla.
+  \item \textbf{De crecimiento}: un cambio previsible durante el desarrollo o después de la entrega.
+\end{itemize}
+
+% ------------------------------------------------------------
+\subsection{Resumen de escenarios}
+
+\begin{tabla}{|L{1.3cm}|Y|L{2.75cm}|L{2.0cm}|L{1.3cm}|}
+\hline
+\filacab \cab{ID} & \cab{Escenario} & \cab{Característica} & \cab{Tipo} & \cab{(I, S)} \\ \hline
+\endhead
+ESC-01 & Colocar una barrera con el tablero avanzado en una partida en línea & QA-01 Desempeño & Uso & (A, A) \\ \hline
+ESC-02 & Un niño intenta una barrera que encierra a su rival & QA-02 Usabilidad & Uso & (A, B) \\ \hline
+ESC-03 & Un niño inicia sesión en un equipo nuevo con segundo factor & QA-02, QA-03 & Uso & (A, M) \\ \hline
+ESC-04 & Llega un mensaje inapropiado al chat de una partida & QA-09 Protección & Uso & (A, M) \\ \hline
+ESC-05 & Un cliente alterado intenta hacer trampa & QA-03 Seguridad & Exploratorio & (A, A) \\ \hline
+ESC-06 & Alguien captura el tráfico en una red compartida & QA-03 Seguridad & Exploratorio & (A, A) \\ \hline
+ESC-07 & Varios jugadores reportan en grupo a un inocente & QA-08, QA-09 & Exploratorio & (M, M) \\ \hline
+ESC-08 & Se corta la conexión del jugador a mitad de su turno & QA-06 Fiabilidad & Exploratorio & (A, A) \\ \hline
+ESC-09 & SQL Server se cae con partidas en curso & QA-06, QA-08 & Exploratorio & (A, A) \\ \hline
+ESC-10 & El servicio de correo deja de responder durante registros & QA-06 Fiabilidad & Exploratorio & (M, M) \\ \hline
+ESC-11 & Se agrega un tercer idioma con otro sistema de escritura & QA-04 Localizabilidad & Crecimiento & (A, M) \\ \hline
+ESC-12 & El diseñador cambia los parámetros de las reglas & QA-05, QA-07 & Crecimiento & (A, A) \\ \hline
+ESC-13 & Se recorta la IA en la semana 10 & QA-05 Mantenibilidad & Crecimiento & (A, M) \\ \hline
+ESC-14 & Se aprueba el modo LAN con el modo en línea ya entregado & QA-05 Mantenibilidad & Crecimiento & (M, A) \\ \hline
+ESC-15 & Hay que cambiar nombre, arte y recursos por motivos legales & QA-05 Mantenibilidad & Crecimiento & (A, B) \\ \hline
+ESC-16 & Se cambia el mecanismo del segundo factor & QA-05 Mantenibilidad & Crecimiento & (M, M) \\ \hline
+ESC-17 & Regresión del incremento semanal sin interfaz & QA-07 Capacidad de prueba & Uso & (A, M) \\ \hline
+ESC-18 & La plataforma de distribución revisa el paquete & QA-10 Instalabilidad & Uso & (B, B) \\ \hline
+\end{tabla}
+
+% ------------------------------------------------------------
+\subsection{Escenarios de operación normal}
+
+\input{secciones/escenarios/esc01}
+\input{secciones/escenarios/esc02}
+\input{secciones/escenarios/esc03}
+\input{secciones/escenarios/esc04}
+
+% ------------------------------------------------------------
+\subsection{Escenarios de ataque y operación degradada}
+
+\input{secciones/escenarios/esc05}
+\input{secciones/escenarios/esc06}
+\input{secciones/escenarios/esc07}
+\input{secciones/escenarios/esc08}
+\input{secciones/escenarios/esc09}
+\input{secciones/escenarios/esc10}
+
+% ------------------------------------------------------------
+\subsection{Escenarios de desarrollo y crecimiento}
+
+\input{secciones/escenarios/esc11}
+\input{secciones/escenarios/esc12}
+\input{secciones/escenarios/esc13}
+\input{secciones/escenarios/esc14}
+\input{secciones/escenarios/esc15}
+\input{secciones/escenarios/esc16}
+\input{secciones/escenarios/esc17}
+
+% ------------------------------------------------------------
+\subsection{Escenarios de instalación y distribución}
+
+\input{secciones/escenarios/esc18}
+
+% ------------------------------------------------------------
+\input{secciones/09_cobertura}
